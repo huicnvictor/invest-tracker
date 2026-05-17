@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FIRE Calculator — Invest Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Archivo+Black&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #F5F0E8;
+      --ink: #1A1A1A;
+      --red: #E63946;
+      --blue: #2D5FD8;
+      --yellow: #FFD43B;
+      --green: #2D8C5A;
+      --muted: #6B6B6B;
+      --line: 2.5px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.55;
+      min-height: 100vh;
+      padding: 2rem 6% 5rem;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.5rem;
+      border-bottom: var(--line) solid var(--ink);
+      margin-bottom: 3rem;
+    }
+    .logo {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .logo-dot {
+      width: 14px; height: 14px;
+      background: var(--red);
+      display: inline-block;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding-bottom: 4px;
+      border-bottom: 3px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .nav-links a:hover { border-color: var(--blue); }
+    .nav-links a.active { border-color: var(--ink); }
+
+    /* ── HERO ── */
+    .hero {
+      margin-bottom: 3rem;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--yellow);
+      padding: 0.3rem 0.7rem;
+      border: var(--line) solid var(--ink);
+      margin-bottom: 1.2rem;
+    }
+    h1 {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      line-height: 1.05;
+      margin-bottom: 1rem;
+    }
+    h1 .accent { color: var(--red); }
+    .hero p {
+      max-width: 640px;
+      font-size: 1.05rem;
+      color: var(--muted);
+    }
+
+    /* ── GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 880px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: #fff;
+      border: var(--line) solid var(--ink);
+      padding: 1.8rem;
+      box-shadow: 8px 8px 0 var(--ink);
+    }
+    .card-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.7rem;
+      border-bottom: var(--line) solid var(--ink);
+    }
+
+    /* ── FORM ── */
+    .field {
+      margin-bottom: 1.2rem;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.7rem 0.8rem;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      background: var(--bg);
+      border: var(--line) solid var(--ink);
+      color: var(--ink);
+    }
+    input:focus, select:focus {
+      outline: none;
+      background: #fff;
+      box-shadow: 4px 4px 0 var(--blue);
+    }
+    .helper {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 1rem;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--ink);
+      color: var(--bg);
+      border: var(--line) solid var(--ink);
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    button:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 6px 6px 0 var(--red);
+    }
+    button:active { transform: translate(0, 0); box-shadow: none; }
+
+    /* ── RESULTS ── */
+    .result-empty {
+      color: var(--muted);
+      font-style: italic;
+      padding: 2rem 0;
+      text-align: center;
+    }
+    .result-block { display: none; }
+    .result-block.show { display: block; }
+
+    .headline {
+      background: var(--yellow);
+      border: var(--line) solid var(--ink);
+      padding: 1.3rem;
+      margin-bottom: 1.5rem;
+    }
+    .headline-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .headline-value {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 2rem;
+      line-height: 1.1;
+    }
+    .headline-sub {
+      font-size: 0.95rem;
+      margin-top: 0.3rem;
+      color: var(--muted);
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1rem;
+    }
+    .stat {
+      padding: 0.8rem;
+      border: var(--line) solid var(--ink);
+      background: var(--bg);
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+    .stat-value {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1.15rem;
+    }
+
+    .warning {
+      background: var(--red);
+      color: #fff;
+      padding: 0.9rem 1rem;
+      border: var(--line) solid var(--ink);
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+    .success {
+      background: var(--green);
+      color: #fff;
+      padding: 0.9rem 1rem;
+      border: var(--line) solid var(--ink);
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    /* ── TABLE ── */
+    .breakdown {
+      margin-top: 2.5rem;
+      display: none;
+    }
+    .breakdown.show { display: block; }
+    .breakdown-title {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: var(--line) solid var(--ink);
+    }
+    th, td {
+      padding: 0.6rem 0.8rem;
+      text-align: right;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.9rem;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    th {
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: none; font-weight: 700; background: var(--yellow); }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: var(--line) solid var(--ink);
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="logo">
+        <span class="logo-dot"></span>
+        INVEST TRACKER
+      </div>
+      <nav class="nav-links">
+        <a href="index.html" class="active">FIRE</a>
+        <a href="alerts.html">Alerts</a>
+        <a href="library.html">Library</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <span class="eyebrow">Calculator</span>
+      <h1>How much do I need to invest <span class="accent">every year</span>?</h1>
+      <p>Plug in your age, target, and ETF. Get the annual contribution you need to reach financial independence.</p>
+    </section>
+
+    <div class="grid">
+
+      <div class="card">
+        <h2 class="card-title">Your Plan</h2>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="currentAge">Current Age</label>
+            <input type="number" id="currentAge" value="30" min="10" max="100" />
+          </div>
+          <div class="field">
+            <label for="targetAge">Target Age</label>
+            <input type="number" id="targetAge" value="55" min="11" max="100" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="targetAmount">Target Amount ($)</label>
+          <input type="number" id="targetAmount" value="1500000" min="0" step="10000" />
+          <div class="helper">The portfolio size you want when you stop working.</div>
+        </div>
+
+        <div class="field">
+          <label for="principal">Already Invested ($)</label>
+          <input type="number" id="principal" value="20000" min="0" step="1000" />
+          <div class="helper">Current portfolio that will keep compounding.</div>
+        </div>
+
+        <div class="field">
+          <label for="etf">ETF / Asset</label>
+          <select id="etf">
+            <option value="10">VOO — S&P 500 (~10%/yr historical)</option>
+            <option value="13">QQQ — Nasdaq 100 (~13%/yr historical)</option>
+            <option value="10" selected>VTI — Total US Market (~10%/yr)</option>
+            <option value="8">VT — Total World (~8%/yr)</option>
+            <option value="11">SCHD — Dividend Growth (~11%/yr)</option>
+            <option value="4">BND — Bonds (~4%/yr)</option>
+            <option value="custom">Custom rate…</option>
+          </select>
+        </div>
+
+        <div class="field" id="customRateField" style="display:none;">
+          <label for="customRate">Annual Return (%)</label>
+          <input type="number" id="customRate" value="7" min="0" max="50" step="0.1" />
+        </div>
+
+        <div class="field">
+          <label for="inflation">Inflation Adjustment (%)</label>
+          <input type="number" id="inflation" value="0" min="0" max="20" step="0.1" />
+          <div class="helper">Set to 0 for nominal numbers. Use ~2-3% for real-dollar planning.</div>
+        </div>
+
+        <button id="calcBtn">Calculate</button>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">Result</h2>
+        <div id="resultEmpty" class="result-empty">Fill in your plan and click Calculate.</div>
+        <div id="resultBlock" class="result-block">
+          <div id="warningSlot"></div>
+          <div class="headline">
+            <div class="headline-label">Invest per year</div>
+            <div class="headline-value" id="annual">$0</div>
+            <div class="headline-sub" id="monthly">≈ $0 / month</div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat">
+              <div class="stat-label">Years to Goal</div>
+              <div class="stat-value" id="years">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Effective Return</div>
+              <div class="stat-value" id="effRate">0%</div>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div class="stat">
+              <div class="stat-label">Total Contributed</div>
+              <div class="stat-value" id="totalIn">$0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Growth Earned</div>
+              <div class="stat-value" id="growth">$0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <section class="breakdown" id="breakdown">
+      <h3 class="breakdown-title">Year-by-Year Breakdown</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Age</th>
+            <th>Contributed</th>
+            <th>Growth</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </section>
+
+    <footer>
+      <div>Invest Tracker · personal tool</div>
+      <div>Returns shown are historical averages, not guarantees.</div>
+    </footer>
+
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    $('etf').addEventListener('change', e => {
+      $('customRateField').style.display = e.target.value === 'custom' ? 'block' : 'none';
+    });
+
+    const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+
+    function calc() {
+      const ageNow = +$('currentAge').value;
+      const ageGoal = +$('targetAge').value;
+      const target = +$('targetAmount').value;
+      const principal = +$('principal').value;
+      const etfVal = $('etf').value;
+      const rate = (etfVal === 'custom' ? +$('customRate').value : +etfVal) / 100;
+      const infl = +$('inflation').value / 100;
+
+      const warn = $('warningSlot');
+      warn.innerHTML = '';
+
+      if (ageGoal <= ageNow) {
+        warn.innerHTML = '<div class="warning">Target age must be greater than current age.</div>';
+        $('resultEmpty').style.display = 'none';
+        $('resultBlock').classList.add('show');
+        $('breakdown').classList.remove('show');
+        return;
+      }
+
+      const n = ageGoal - ageNow;
+      // Real return: (1+r)/(1+i) - 1
+      const r = infl > 0 ? (1 + rate) / (1 + infl) - 1 : rate;
+
+      const futurePrincipal = principal * Math.pow(1 + r, n);
+      const remaining = target - futurePrincipal;
+
+      let annual;
+      let alreadyThere = false;
+
+      if (remaining <= 0) {
+        annual = 0;
+        alreadyThere = true;
+      } else if (Math.abs(r) < 1e-9) {
+        annual = remaining / n;
+      } else {
+        // FV of annuity due (contributing at start of year)
+        // FV = P * [((1+r)^n - 1) / r] * (1+r)
+        annual = remaining * r / ((Math.pow(1 + r, n) - 1) * (1 + r));
+      }
+
+      $('resultEmpty').style.display = 'none';
+      $('resultBlock').classList.add('show');
+
+      if (alreadyThere) {
+        warn.innerHTML = '<div class="success">You’re already on track. Existing principal alone reaches the goal.</div>';
+      }
+
+      $('annual').textContent = fmt(annual);
+      $('monthly').textContent = '≈ ' + fmt(annual / 12) + ' / month';
+      $('years').textContent = n + (n === 1 ? ' yr' : ' yrs');
+      $('effRate').textContent = (r * 100).toFixed(2) + '%' + (infl > 0 ? ' real' : '');
+      $('totalIn').textContent = fmt(principal + annual * n);
+
+      // Build breakdown
+      const tbody = $('tableBody');
+      tbody.innerHTML = '';
+      let bal = principal;
+      let contributed = principal;
+      for (let i = 1; i <= n; i++) {
+        // contribute at start of year, then grow
+        bal += annual;
+        contributed += annual;
+        const before = bal;
+        bal = bal * (1 + r);
+        const yearGrowth = bal - before;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i}</td>
+          <td>${ageNow + i}</td>
+          <td>${fmt(contributed)}</td>
+          <td>${fmt(bal - contributed)}</td>
+          <td>${fmt(bal)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+      $('growth').textContent = fmt(bal - (principal + annual * n));
+      $('breakdown').classList.add('show');
+    }
+
+    $('calcBtn').addEventListener('click', calc);
+
+    // Calculate on Enter in any input
+    document.querySelectorAll('input').forEach(el => {
+      el.addEventListener('keydown', e => { if (e.key === 'Enter') calc(); });
+    });
+
+    // Initial calc
+    calc();
+  </script>
+</body>
+</html>
