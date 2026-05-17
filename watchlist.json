@@ -1,0 +1,11 @@
+{
+  "tickers": [
+    {
+      "symbol": "SXRV.DE",
+      "name": "iShares NASDAQ 100 UCITS ETF",
+      "currency": "EUR",
+      "low": null,
+      "high": null
+    }
+  ]
+}
