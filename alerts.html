@@ -4,116 +4,169 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Price Alerts — Invest Tracker</title>
+  <link rel="icon" type="image/x-icon" href="icon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Archivo+Black&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --bg: #F5F0E8; --ink: #1A1A1A; --red: #E63946;
-      --blue: #2D5FD8; --yellow: #FFD43B; --green: #2D8C5A;
-      --muted: #6B6B6B; --line: 2.5px;
+      --bg: #111113;
+      --surface: #18181B;
+      --surface-2: #1F1F23;
+      --border: #27272A;
+      --border-strong: #3F3F46;
+      --accent: #3B82F6;
+      --accent-soft: rgba(59, 130, 246, 0.12);
+      --text: #FAFAFA;
+      --text-2: #A1A1AA;
+      --text-3: #71717A;
+      --success: #10B981;
+      --success-soft: rgba(16, 185, 129, 0.12);
+      --danger: #EF4444;
+      --danger-soft: rgba(239, 68, 68, 0.12);
+      --radius: 14px;
+      --radius-sm: 8px;
     }
+
     body {
-      background: var(--bg); color: var(--ink);
-      font-family: 'Space Grotesk', sans-serif; line-height: 1.55;
-      min-height: 100vh; padding: 2rem 6% 5rem;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      min-height: 100vh;
+      padding: 2rem 6% 5rem;
+      -webkit-font-smoothing: antialiased;
     }
     .container { max-width: 1100px; margin: 0 auto; }
+
     header {
       display: flex; justify-content: space-between; align-items: center;
-      padding-bottom: 1.5rem; border-bottom: var(--line) solid var(--ink); margin-bottom: 3rem;
+      padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem;
     }
     .logo {
-      font-family: 'Archivo Black', sans-serif; font-size: 1.2rem;
-      letter-spacing: 0.06em; display: flex; align-items: center; gap: 0.6rem;
+      font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em;
+      display: flex; align-items: center; gap: 0.6rem; color: var(--text);
     }
-    .logo-dot { width: 14px; height: 14px; background: var(--red); display: inline-block; }
-    .nav-links { display: flex; gap: 2rem; }
+    .logo-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; display: inline-block; }
+    .nav-links { display: flex; gap: 0.4rem; }
     .nav-links a {
-      text-decoration: none; color: var(--ink); font-size: 0.85rem;
-      font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-      padding-bottom: 4px; border-bottom: 3px solid transparent; transition: border-color 0.2s;
+      text-decoration: none; color: var(--text-2); font-size: 0.875rem;
+      font-weight: 500; padding: 0.45rem 0.9rem; border-radius: var(--radius-sm);
+      transition: color 0.15s, background 0.15s;
     }
-    .nav-links a:hover { border-color: var(--blue); }
-    .nav-links a.active { border-color: var(--ink); }
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+    .nav-links a.active { color: var(--accent); background: var(--accent-soft); }
+
     .eyebrow {
-      display: inline-block; font-size: 0.78rem; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase; background: var(--yellow);
-      padding: 0.3rem 0.7rem; border: var(--line) solid var(--ink); margin-bottom: 1.2rem;
+      display: inline-block; font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-soft);
+      padding: 0.3rem 0.7rem; border-radius: var(--radius-sm); margin-bottom: 1.1rem;
     }
     h1 {
-      font-family: 'Archivo Black', sans-serif;
-      font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.05; margin-bottom: 1rem;
+      font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700;
+      letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 0.7rem;
     }
-    h1 .accent { color: var(--red); }
-    .lede { max-width: 640px; font-size: 1.05rem; color: var(--muted); margin-bottom: 3rem; }
+    .lede { max-width: 640px; color: var(--text-2); font-size: 1rem; margin-bottom: 2rem; }
 
-    .last-check {
-      font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem;
+    .meta-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;
     }
-    .last-check strong { color: var(--ink); }
+    .last-check { font-size: 0.85rem; color: var(--text-3); }
+    .last-check strong { color: var(--text); font-weight: 600; }
+    .btn-link {
+      text-decoration: none; color: var(--text-2); font-size: 0.82rem;
+      font-weight: 500; padding: 0.4rem 0.8rem; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .btn-link:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface); }
 
-    .ticker-grid { display: grid; gap: 1.5rem; margin-bottom: 3rem; }
+    .ticker-grid { display: grid; gap: 1rem; margin-bottom: 3rem; }
     .ticker-card {
-      background: #fff; border: var(--line) solid var(--ink);
-      box-shadow: 8px 8px 0 var(--ink); padding: 1.8rem;
-      display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.6rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1.5rem;
+      align-items: center;
     }
-    @media (max-width: 700px) {
-      .ticker-card { grid-template-columns: 1fr; }
+    @media (max-width: 700px) { .ticker-card { grid-template-columns: 1fr; } }
+
+    .ticker-head {
+      display: flex; align-items: baseline; gap: 0.8rem; margin-bottom: 0.6rem;
+      flex-wrap: wrap;
     }
-    .ticker-name {
-      font-family: 'Archivo Black', sans-serif; font-size: 1.1rem;
-      letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.3rem;
+    .ticker-name { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+    .ticker-sym {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+      color: var(--text-3); letter-spacing: 0.04em;
     }
-    .ticker-sym { font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem; letter-spacing: 0.05em; }
-    .price-row { display: flex; align-items: baseline; gap: 0.8rem; margin-bottom: 0.8rem; }
+    .price-row { display: flex; align-items: baseline; gap: 0.8rem; margin-bottom: 0.9rem; }
     .price {
-      font-family: 'Archivo Black', sans-serif; font-size: 2.2rem; line-height: 1;
+      font-family: 'JetBrains Mono', monospace; font-size: 1.8rem;
+      font-weight: 500; color: var(--text); line-height: 1; letter-spacing: -0.01em;
     }
-    .price.unknown { color: var(--muted); font-size: 1.3rem; }
-    .thresholds { display: flex; gap: 1.2rem; font-size: 0.9rem; }
-    .threshold-item { display: flex; align-items: center; gap: 0.4rem; }
+    .price.unknown { color: var(--text-3); font-size: 1rem; font-style: italic; }
+
+    .thresholds { display: flex; gap: 1.3rem; font-size: 0.88rem; }
+    .threshold-item {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
     .threshold-label {
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
-      text-transform: uppercase; color: var(--muted);
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3);
     }
-    .threshold-val { font-weight: 700; }
-    .threshold-val.unset { color: var(--muted); font-style: italic; font-weight: 400; }
+    .threshold-val { font-family: 'JetBrains Mono', monospace; font-weight: 500; color: var(--text); }
+    .threshold-val.unset { color: var(--text-3); font-style: italic; }
 
     .status {
-      padding: 0.5rem 1rem; border: var(--line) solid var(--ink);
-      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase; text-align: center; min-width: 130px;
+      padding: 0.5rem 1rem; border-radius: var(--radius-sm);
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+      text-align: center; min-width: 140px; border: 1px solid var(--border);
     }
-    .status.ok { background: var(--bg); }
-    .status.low { background: var(--green); color: #fff; }
-    .status.high { background: var(--red); color: #fff; }
-    .status.unset { background: var(--bg); color: var(--muted); }
+    .status.ok { background: var(--surface-2); color: var(--text-2); }
+    .status.low {
+      background: var(--success-soft); color: var(--success); border-color: rgba(16, 185, 129, 0.3);
+    }
+    .status.high {
+      background: var(--danger-soft); color: var(--danger); border-color: rgba(239, 68, 68, 0.3);
+    }
+    .status.unset { background: var(--surface-2); color: var(--text-3); }
 
     .help-card {
-      background: #fff; border: var(--line) solid var(--ink);
-      padding: 1.8rem; margin-top: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.6rem;
+      margin-top: 2rem;
     }
-    .help-card h2 {
-      font-family: 'Archivo Black', sans-serif; font-size: 1rem;
-      letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 1rem;
-      padding-bottom: 0.7rem; border-bottom: var(--line) solid var(--ink);
+    .help-card .card-title {
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 1rem;
+      padding-bottom: 0.9rem; border-bottom: 1px solid var(--border);
     }
     .help-card ol { padding-left: 1.4rem; }
-    .help-card li { margin-bottom: 0.6rem; }
+    .help-card li { margin-bottom: 0.5rem; color: var(--text-2); }
     .help-card code {
-      background: var(--bg); padding: 0.1rem 0.4rem;
-      border: 1.5px solid var(--ink); font-size: 0.88em;
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--surface-2); padding: 0.15rem 0.4rem;
+      border: 1px solid var(--border); border-radius: 4px;
+      font-size: 0.88em; color: var(--text);
     }
-    .help-card a { color: var(--blue); font-weight: 700; }
+    .help-card a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .help-card a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <div class="logo"><span class="logo-dot"></span>INVEST TRACKER</div>
+      <div class="logo"><span class="logo-dot"></span>Invest Tracker</div>
       <nav class="nav-links">
         <a href="index.html">FIRE</a>
         <a href="alerts.html" class="active">Alerts</a>
@@ -122,20 +175,23 @@
     </header>
 
     <span class="eyebrow">Live</span>
-    <h1>Price <span class="accent">alerts</span></h1>
+    <h1>Price alerts</h1>
     <p class="lede">A scheduled job checks these tickers four times per weekday. When a price crosses your low or high, an email goes to your inbox.</p>
 
-    <div class="last-check" id="lastCheck">Loading…</div>
+    <div class="meta-row">
+      <div class="last-check" id="lastCheck">Loading…</div>
+      <a class="btn-link" href="https://github.com/huicnvictor/invest-tracker/actions/workflows/check-prices.yml" target="_blank">Run check now ↗</a>
+    </div>
 
     <div class="ticker-grid" id="tickerGrid"></div>
 
     <div class="help-card">
-      <h2>Set or change your thresholds</h2>
+      <div class="card-title">Set or change your thresholds</div>
       <ol>
         <li>Open <a href="https://github.com/huicnvictor/invest-tracker/edit/main/watchlist.json" target="_blank"><code>watchlist.json</code></a> on GitHub.</li>
         <li>Fill in <code>"low"</code> and <code>"high"</code> numbers for each ticker (leave as <code>null</code> to skip that side).</li>
         <li>Commit. The next scheduled run will use the new values.</li>
-        <li>To check immediately, run the workflow manually at <a href="https://github.com/huicnvictor/invest-tracker/actions/workflows/check-prices.yml" target="_blank">Actions → Check Prices → Run workflow</a>.</li>
+        <li>To check immediately, click <strong>Run check now</strong> above.</li>
       </ol>
     </div>
   </div>
@@ -150,8 +206,7 @@
 
     function fmtTime(iso) {
       if (!iso) return 'never';
-      const d = new Date(iso);
-      return d.toLocaleString();
+      return new Date(iso).toLocaleString();
     }
 
     function statusFor(price, low, high) {
@@ -164,8 +219,8 @@
 
     async function load() {
       const [watchlist, state] = await Promise.all([
-        fetch('./watchlist.json').then(r => r.json()),
-        fetch('./state.json').then(r => r.json()).catch(() => ({ tickers: {} }))
+        fetch('./watchlist.json?t=' + Date.now()).then(r => r.json()),
+        fetch('./state.json?t=' + Date.now()).then(r => r.json()).catch(() => ({ tickers: {} }))
       ]);
 
       const grid = document.getElementById('tickerGrid');
@@ -198,8 +253,10 @@
         card.className = 'ticker-card';
         card.innerHTML = `
           <div>
-            <div class="ticker-name">${ticker.name || ticker.symbol}</div>
-            <div class="ticker-sym">${ticker.symbol} · ${cur}</div>
+            <div class="ticker-head">
+              <div class="ticker-name">${ticker.name || ticker.symbol}</div>
+              <div class="ticker-sym">${ticker.symbol} · ${cur}</div>
+            </div>
             ${priceStr}
             <div class="thresholds">
               <div class="threshold-item"><span class="threshold-label">Low</span> ${lowStr}</div>
@@ -213,7 +270,7 @@
 
       document.getElementById('lastCheck').innerHTML = latestCheck
         ? `Last checked <strong>${fmtTime(latestCheck)}</strong>`
-        : `No checks run yet. The scheduled job will run at the next slot (08, 12, 16, 20 UTC on weekdays).`;
+        : `No checks run yet. Click <strong>Run check now</strong> to test, or wait for the next scheduled slot.`;
     }
 
     load();
