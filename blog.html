@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Invest Tracker</title>
+  <link rel="icon" type="image/x-icon" href="icon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #111113;
+      --surface: #18181B;
+      --surface-2: #1F1F23;
+      --border: #27272A;
+      --border-strong: #3F3F46;
+      --accent: #3B82F6;
+      --accent-hover: #2563EB;
+      --accent-soft: rgba(59, 130, 246, 0.12);
+      --text: #FAFAFA;
+      --text-2: #A1A1AA;
+      --text-3: #71717A;
+      --danger: #EF4444;
+      --danger-soft: rgba(239, 68, 68, 0.12);
+      --success: #10B981;
+      --warning: #F59E0B;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      min-height: 100vh;
+      padding: 2rem 6% 5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 820px; margin: 0 auto; }
+
+    /* ── HEADER ── */
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem;
+    }
+    .logo {
+      font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em;
+      display: flex; align-items: center; gap: 0.6rem; color: var(--text);
+      user-select: none;
+    }
+    .logo-dot {
+      width: 10px; height: 10px; background: var(--accent);
+      border-radius: 50%; display: inline-block; cursor: pointer;
+    }
+    .nav-links { display: flex; gap: 0.4rem; }
+    .nav-links a {
+      text-decoration: none; color: var(--text-2); font-size: 0.875rem;
+      font-weight: 500; padding: 0.45rem 0.9rem; border-radius: var(--radius-sm);
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+    .nav-links a.active { color: var(--accent); background: var(--accent-soft); }
+
+    /* ── HERO ── */
+    .hero { margin-bottom: 2.5rem; }
+    .eyebrow {
+      display: inline-block; font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-soft);
+      padding: 0.3rem 0.7rem; border-radius: var(--radius-sm); margin-bottom: 1.1rem;
+    }
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700;
+      letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 0.7rem;
+    }
+    .lede { max-width: 640px; color: var(--text-2); font-size: 1rem; }
+
+    /* ── ADMIN BAR ── */
+    .admin-bar {
+      display: none;
+      gap: 0.5rem; flex-wrap: wrap;
+      padding: 0.85rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--accent-soft);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+    .admin-bar.show { display: flex; }
+    .admin-label {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--accent); margin-right: auto;
+    }
+    .btn {
+      font-family: inherit; font-size: 0.85rem; font-weight: 500;
+      padding: 0.45rem 0.85rem; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface-2);
+      color: var(--text-2); cursor: pointer;
+      transition: all 0.15s; line-height: 1;
+    }
+    .btn:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface); }
+    .btn-primary {
+      background: var(--accent); border-color: var(--accent); color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+    .btn-danger { color: var(--danger); border-color: rgba(239,68,68,0.3); }
+    .btn-danger:hover { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
+
+    /* ── FILTER ── */
+    .filter-bar {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin-bottom: 2rem; padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .chip {
+      font-size: 0.78rem; font-weight: 500; color: var(--text-2);
+      padding: 0.35rem 0.75rem; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 999px;
+      cursor: pointer; transition: all 0.15s; font-family: inherit;
+    }
+    .chip:hover { color: var(--text); border-color: var(--border-strong); }
+    .chip.active {
+      color: var(--accent); background: var(--accent-soft);
+      border-color: transparent;
+    }
+
+    /* ── POSTS ── */
+    .posts { display: flex; flex-direction: column; gap: 1rem; }
+
+    article.post {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.6rem 1.8rem;
+      transition: border-color 0.15s;
+    }
+    article.post:hover { border-color: var(--border-strong); }
+
+    .post-meta {
+      display: flex; gap: 0.7rem; align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem; color: var(--text-3);
+      margin-bottom: 0.6rem; flex-wrap: wrap;
+    }
+    .post-tag {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-soft);
+      padding: 0.2rem 0.55rem; border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .post-title {
+      font-size: 1.35rem; font-weight: 700;
+      line-height: 1.3; letter-spacing: -0.01em;
+      margin-bottom: 0.5rem; color: var(--text);
+    }
+    .post-excerpt { color: var(--text-2); font-size: 0.95rem; margin-bottom: 1rem; }
+
+    .post-actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+    .read-toggle {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: none; border: none; padding: 0;
+      color: var(--accent); font-size: 0.88rem; font-weight: 500;
+      cursor: pointer; font-family: inherit;
+    }
+    .read-toggle::after { content: '→'; transition: transform 0.2s; margin-left: 0.2rem; }
+    .read-toggle.open::after { transform: rotate(90deg); }
+    .admin-only { display: none; }
+    body.admin .admin-only { display: inline-flex; }
+
+    .post-body {
+      display: none;
+      color: var(--text-2);
+      font-size: 0.95rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      margin-top: 1rem;
+    }
+    .post-body.show { display: block; }
+    .post-body p { margin-bottom: 0.9rem; color: var(--text-2); }
+    .post-body p:last-child { margin-bottom: 0; }
+    .post-body h3 {
+      font-size: 1rem; font-weight: 600;
+      color: var(--text); margin: 1.4rem 0 0.6rem;
+    }
+    .post-body h3:first-child { margin-top: 0; }
+    .post-body ul, .post-body ol { padding-left: 1.3rem; margin-bottom: 0.9rem; }
+    .post-body li { margin-bottom: 0.35rem; color: var(--text-2); }
+    .post-body code {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+      background: var(--surface-2); padding: 0.1rem 0.4rem;
+      border-radius: 4px; color: var(--text);
+    }
+    .post-body strong { color: var(--text); font-weight: 600; }
+    .post-body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+    .post-body a:hover { border-bottom-color: var(--accent); }
+
+    /* ── EMPTY ── */
+    .empty {
+      color: var(--text-3); text-align: center;
+      padding: 3rem 0; font-size: 0.92rem;
+    }
+
+    /* ── TRASH VIEW ── */
+    .trash-view { display: none; }
+    .trash-view.show { display: block; }
+    .trash-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 1.2rem; gap: 1rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); margin-bottom: 0.6rem;
+    }
+    .trash-info { flex: 1; min-width: 0; }
+    .trash-title { font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+    .trash-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: var(--text-3);
+    }
+    .trash-actions { display: flex; gap: 0.4rem; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100; padding: 2rem 1rem;
+      overflow-y: auto;
+      align-items: flex-start; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%; max-width: 680px;
+      padding: 2rem;
+      margin: auto 0;
+    }
+    .modal-title {
+      font-size: 1.1rem; font-weight: 700; color: var(--text);
+      margin-bottom: 1.5rem; padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .field { margin-bottom: 1.1rem; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    label {
+      display: block; font-size: 0.78rem; font-weight: 500;
+      color: var(--text-2); margin-bottom: 0.4rem;
+    }
+    input[type=text], input[type=date], textarea {
+      width: 100%; padding: 0.6rem 0.8rem;
+      font-family: inherit; font-size: 0.92rem;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    textarea { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.55; resize: vertical; }
+    textarea.body-area { min-height: 280px; }
+    textarea.excerpt-area { min-height: 70px; font-family: inherit; font-size: 0.92rem; }
+    input:focus, textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .helper { font-size: 0.75rem; color: var(--text-3); margin-top: 0.35rem; }
+    .modal-actions {
+      display: flex; gap: 0.6rem; justify-content: flex-end;
+      margin-top: 1.5rem; padding-top: 1.2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 0.7rem 1.2rem; border-radius: var(--radius-sm);
+      font-size: 0.88rem; color: var(--text);
+      opacity: 0; transition: all 0.25s;
+      z-index: 200; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: var(--success); color: var(--success); }
+    .toast.warning { border-color: var(--warning); color: var(--warning); }
+    .toast.danger { border-color: var(--danger); color: var(--danger); }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 4rem; padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem; color: var(--text-3);
+      display: flex; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .dirty-indicator {
+      display: none;
+      font-size: 0.78rem; color: var(--warning);
+      padding: 0.3rem 0.6rem;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: var(--radius-sm);
+    }
+    body.dirty .dirty-indicator { display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="logo">
+        <span class="logo-dot" id="logoDot" title="双击进入管理模式"></span>
+        Invest Tracker
+      </div>
+      <nav class="nav-links">
+        <a href="index.html">FIRE</a>
+        <a href="alerts.html">Alerts</a>
+        <a href="library.html">Library</a>
+        <a href="blog.html" class="active">Blog</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <span class="eyebrow">Notes</span>
+      <h1>投资 & 工具笔记</h1>
+      <p class="lede">记录自己用过的投资软件、踩过的坑、还在打磨的想法。不是建议，是日志。</p>
+    </section>
+
+    <div class="admin-bar" id="adminBar">
+      <span class="admin-label">管理模式</span>
+      <span class="dirty-indicator">有未导出的改动</span>
+      <button class="btn btn-primary" id="newPostBtn">+ 新文章</button>
+      <button class="btn" id="trashBtn">垃圾箱 <span id="trashCount"></span></button>
+      <button class="btn" id="exportBtn">导出 posts.js</button>
+      <button class="btn" id="resetBtn" title="清空本地修改，重新从 posts.js 加载">重置</button>
+      <button class="btn btn-danger" id="logoutBtn">退出</button>
+    </div>
+
+    <!-- POSTS VIEW -->
+    <div id="postsView">
+      <div class="filter-bar" id="filterBar"></div>
+      <div class="posts" id="posts"></div>
+      <div class="empty" id="empty" style="display:none;">还没有文章。</div>
+    </div>
+
+    <!-- TRASH VIEW -->
+    <div class="trash-view" id="trashView">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h2 style="font-size:1.2rem; font-weight:700;">垃圾箱</h2>
+        <button class="btn" id="backFromTrashBtn">← 返回文章</button>
+      </div>
+      <div id="trashList"></div>
+      <div class="empty" id="trashEmpty" style="display:none;">垃圾箱是空的。</div>
+    </div>
+
+    <footer>
+      <div>Invest Tracker · personal notes</div>
+      <div>纯个人记录，不构成任何投资建议。</div>
+    </footer>
+
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <div class="modal-title" id="editModalTitle">新文章</div>
+      <input type="hidden" id="editId" />
+      <div class="field-row">
+        <div class="field">
+          <label for="editDate">日期</label>
+          <input type="date" id="editDate" />
+        </div>
+        <div class="field">
+          <label for="editTags">标签（逗号分隔）</label>
+          <input type="text" id="editTags" placeholder="软件, 工具" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="editTitle">标题</label>
+        <input type="text" id="editTitle" />
+      </div>
+      <div class="field">
+        <label for="editExcerpt">摘要</label>
+        <textarea id="editExcerpt" class="excerpt-area"></textarea>
+        <div class="helper">列表页和文章顶部显示的一两句话。</div>
+      </div>
+      <div class="field">
+        <label for="editBody">正文（HTML）</label>
+        <textarea id="editBody" class="body-area" placeholder="&lt;h3&gt;小标题&lt;/h3&gt;&#10;&lt;p&gt;段落内容&lt;/p&gt;&#10;&lt;ul&gt;&#10;  &lt;li&gt;条目&lt;/li&gt;&#10;&lt;/ul&gt;"></textarea>
+        <div class="helper">支持的标签：h3、p、ul、ol、li、code、strong、a。</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="cancelEditBtn">取消</button>
+        <button class="btn btn-primary" id="saveEditBtn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="posts.js"></script>
+  <script>
+    'use strict';
+
+    const LS_DATA = 'blog_data_v1';
+    const LS_HASH = 'blog_admin_hash_v1';
+    const SESS_AUTH = 'blog_admin_session';
+
+    const $ = id => document.getElementById(id);
+    const el = (tag, props = {}, html) => {
+      const e = document.createElement(tag);
+      Object.assign(e, props);
+      if (html != null) e.innerHTML = html;
+      return e;
+    };
+
+    let state = { posts: [], trash: [] };
+    let dirty = false;
+    let activeTag = 'all';
+
+    /* ───── Storage ───── */
+
+    function loadData() {
+      const local = localStorage.getItem(LS_DATA);
+      if (local) {
+        try {
+          state = JSON.parse(local);
+          dirty = true;
+          document.body.classList.add('dirty');
+          return;
+        } catch {}
+      }
+      if (window.BLOG_DATA) {
+        state = JSON.parse(JSON.stringify(window.BLOG_DATA));
+      } else {
+        toast('无法加载 posts.js', 'danger');
+      }
+    }
+
+    function persist() {
+      localStorage.setItem(LS_DATA, JSON.stringify(state));
+      dirty = true;
+      document.body.classList.add('dirty');
+    }
+
+    /* ───── Render ───── */
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c]));
+    }
+
+    function fmtDate(d) {
+      return d || '';
+    }
+
+    function allTags() {
+      const set = new Set();
+      state.posts.forEach(p => (p.tags || []).forEach(t => set.add(t)));
+      return Array.from(set);
+    }
+
+    function renderFilter() {
+      const bar = $('filterBar');
+      bar.innerHTML = '';
+      const allBtn = el('button', { className: 'chip' + (activeTag === 'all' ? ' active' : '') }, '全部');
+      allBtn.dataset.tag = 'all';
+      bar.appendChild(allBtn);
+      allTags().forEach(t => {
+        const b = el('button', { className: 'chip' + (activeTag === t ? ' active' : '') }, escapeHtml(t));
+        b.dataset.tag = t;
+        bar.appendChild(b);
+      });
+      bar.querySelectorAll('.chip').forEach(c => {
+        c.addEventListener('click', () => {
+          activeTag = c.dataset.tag;
+          renderFilter();
+          renderPosts();
+        });
+      });
+    }
+
+    function renderPosts() {
+      const list = $('posts');
+      list.innerHTML = '';
+      const sorted = [...state.posts].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      const filtered = activeTag === 'all'
+        ? sorted
+        : sorted.filter(p => (p.tags || []).includes(activeTag));
+
+      $('empty').style.display = filtered.length === 0 ? 'block' : 'none';
+
+      filtered.forEach(p => {
+        const art = el('article', { className: 'post' });
+        const primaryTag = (p.tags && p.tags[0]) || '';
+        art.innerHTML = `
+          <div class="post-meta">
+            <span>${escapeHtml(fmtDate(p.date))}</span>
+            ${primaryTag ? `<span class="post-tag">${escapeHtml(primaryTag)}</span>` : ''}
+          </div>
+          <h2 class="post-title">${escapeHtml(p.title || '')}</h2>
+          <p class="post-excerpt">${escapeHtml(p.excerpt || '')}</p>
+          <div class="post-actions">
+            <button class="read-toggle">展开</button>
+            <button class="btn admin-only edit-btn">编辑</button>
+            <button class="btn btn-danger admin-only delete-btn">删除</button>
+          </div>
+          <div class="post-body">${p.body || ''}</div>
+        `;
+        const toggle = art.querySelector('.read-toggle');
+        const body = art.querySelector('.post-body');
+        toggle.addEventListener('click', () => {
+          const open = body.classList.toggle('show');
+          toggle.classList.toggle('open', open);
+          toggle.textContent = open ? '收起' : '展开';
+        });
+        art.querySelector('.edit-btn').addEventListener('click', () => openEdit(p.id));
+        art.querySelector('.delete-btn').addEventListener('click', () => deletePost(p.id));
+        list.appendChild(art);
+      });
+    }
+
+    function renderTrash() {
+      const list = $('trashList');
+      list.innerHTML = '';
+      $('trashEmpty').style.display = state.trash.length === 0 ? 'block' : 'none';
+      $('trashCount').textContent = state.trash.length ? `(${state.trash.length})` : '';
+
+      [...state.trash]
+        .sort((a, b) => (b.deletedAt || '').localeCompare(a.deletedAt || ''))
+        .forEach(p => {
+          const item = el('div', { className: 'trash-item' });
+          item.innerHTML = `
+            <div class="trash-info">
+              <div class="trash-title">${escapeHtml(p.title || '(无标题)')}</div>
+              <div class="trash-meta">原日期 ${escapeHtml(p.date || '?')} · 删除于 ${escapeHtml((p.deletedAt || '').slice(0,10))}</div>
+            </div>
+            <div class="trash-actions">
+              <button class="btn restore-btn">恢复</button>
+              <button class="btn btn-danger purge-btn">永久删除</button>
+            </div>
+          `;
+          item.querySelector('.restore-btn').addEventListener('click', () => restorePost(p.id));
+          item.querySelector('.purge-btn').addEventListener('click', () => purgePost(p.id));
+          list.appendChild(item);
+        });
+    }
+
+    /* ───── CRUD ───── */
+
+    function newId() {
+      return 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7);
+    }
+
+    function openEdit(id) {
+      const isNew = !id;
+      const p = isNew ? null : state.posts.find(x => x.id === id);
+      $('editModalTitle').textContent = isNew ? '新文章' : '编辑文章';
+      $('editId').value = isNew ? '' : id;
+      $('editDate').value = isNew ? new Date().toISOString().slice(0,10) : (p.date || '');
+      $('editTags').value = isNew ? '' : (p.tags || []).join(', ');
+      $('editTitle').value = isNew ? '' : (p.title || '');
+      $('editExcerpt').value = isNew ? '' : (p.excerpt || '');
+      $('editBody').value = isNew ? '' : (p.body || '');
+      $('editModal').classList.add('show');
+      setTimeout(() => $('editTitle').focus(), 50);
+    }
+
+    function closeEdit() {
+      $('editModal').classList.remove('show');
+    }
+
+    function saveEdit() {
+      const id = $('editId').value;
+      const data = {
+        date: $('editDate').value,
+        tags: $('editTags').value.split(',').map(s => s.trim()).filter(Boolean),
+        title: $('editTitle').value.trim(),
+        excerpt: $('editExcerpt').value.trim(),
+        body: $('editBody').value
+      };
+      if (!data.title) { toast('标题不能为空', 'warning'); return; }
+      if (id) {
+        const i = state.posts.findIndex(p => p.id === id);
+        if (i >= 0) state.posts[i] = { ...state.posts[i], ...data };
+      } else {
+        state.posts.unshift({ id: newId(), ...data });
+      }
+      persist();
+      closeEdit();
+      renderFilter();
+      renderPosts();
+      toast(id ? '已更新' : '已新建', 'success');
+    }
+
+    function deletePost(id) {
+      const i = state.posts.findIndex(p => p.id === id);
+      if (i < 0) return;
+      const [p] = state.posts.splice(i, 1);
+      p.deletedAt = new Date().toISOString();
+      state.trash.unshift(p);
+      persist();
+      renderFilter();
+      renderPosts();
+      renderTrash();
+      toast('已移入垃圾箱', 'warning');
+    }
+
+    function restorePost(id) {
+      const i = state.trash.findIndex(p => p.id === id);
+      if (i < 0) return;
+      const [p] = state.trash.splice(i, 1);
+      delete p.deletedAt;
+      state.posts.unshift(p);
+      persist();
+      renderFilter();
+      renderPosts();
+      renderTrash();
+      toast('已恢复', 'success');
+    }
+
+    function purgePost(id) {
+      if (!confirm('永久删除？此操作不可恢复（导出 posts.json 并 push 后即彻底从仓库中消失）。')) return;
+      state.trash = state.trash.filter(p => p.id !== id);
+      persist();
+      renderTrash();
+      toast('已永久删除', 'danger');
+    }
+
+    /* ───── Export / Reset ───── */
+
+    function exportJson() {
+      const clean = {
+        version: 1,
+        posts: state.posts.map(({ id, date, tags, title, excerpt, body }) => ({ id, date, tags, title, excerpt, body })),
+        trash: state.trash
+      };
+      const header = '// Blog data. Edit through blog.html in admin mode (双击 logo 圆点),\n// then click "导出 posts.js" to download an updated version and commit it.\n';
+      const text = header + 'window.BLOG_DATA = ' + JSON.stringify(clean, null, 2) + ';\n';
+      const blob = new Blob([text], { type: 'application/javascript' });
+      const url = URL.createObjectURL(blob);
+      const a = el('a', { href: url, download: 'posts.js' });
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      toast('已下载 posts.js。覆盖项目里的同名文件后 commit & push。', 'success');
+    }
+
+    function resetLocal() {
+      if (!confirm('清空本地所有未导出的修改，重新从 posts.js 加载？')) return;
+      localStorage.removeItem(LS_DATA);
+      dirty = false;
+      document.body.classList.remove('dirty');
+      location.reload();
+    }
+
+    /* ───── Admin auth ───── */
+
+    async function sha256(text) {
+      const buf = new TextEncoder().encode(text);
+      const hash = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function tryUnlock() {
+      const stored = localStorage.getItem(LS_HASH);
+      if (!stored) {
+        const pw = prompt('首次进入管理模式：设置一个密码（之后访问时输入它来解锁）');
+        if (!pw) return;
+        const pw2 = prompt('再输一次确认：');
+        if (pw !== pw2) { alert('两次输入不一致'); return; }
+        const hash = await sha256(pw);
+        localStorage.setItem(LS_HASH, hash);
+        enterAdmin();
+        toast('密码已设置，进入管理模式', 'success');
+      } else {
+        const pw = prompt('输入管理员密码：');
+        if (!pw) return;
+        const hash = await sha256(pw);
+        if (hash !== stored) { toast('密码错误', 'danger'); return; }
+        enterAdmin();
+      }
+    }
+
+    function enterAdmin() {
+      sessionStorage.setItem(SESS_AUTH, '1');
+      document.body.classList.add('admin');
+      $('adminBar').classList.add('show');
+    }
+
+    function logout() {
+      sessionStorage.removeItem(SESS_AUTH);
+      document.body.classList.remove('admin');
+      $('adminBar').classList.remove('show');
+      showPostsView();
+      toast('已退出管理模式');
+    }
+
+    /* ───── Trash view toggle ───── */
+
+    function showTrashView() {
+      $('postsView').style.display = 'none';
+      $('trashView').classList.add('show');
+      renderTrash();
+    }
+    function showPostsView() {
+      $('postsView').style.display = '';
+      $('trashView').classList.remove('show');
+    }
+
+    /* ───── Toast ───── */
+
+    let toastTimer;
+    function toast(msg, type = '') {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'toast ' + type + ' show';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    /* ───── Init ───── */
+
+    function init() {
+      loadData();
+      renderFilter();
+      renderPosts();
+      $('trashCount').textContent = state.trash.length ? `(${state.trash.length})` : '';
+
+      if (sessionStorage.getItem(SESS_AUTH) === '1') enterAdmin();
+
+      $('logoDot').addEventListener('dblclick', () => {
+        if (document.body.classList.contains('admin')) return;
+        tryUnlock();
+      });
+
+      $('newPostBtn').addEventListener('click', () => openEdit(null));
+      $('trashBtn').addEventListener('click', showTrashView);
+      $('backFromTrashBtn').addEventListener('click', showPostsView);
+      $('exportBtn').addEventListener('click', exportJson);
+      $('resetBtn').addEventListener('click', resetLocal);
+      $('logoutBtn').addEventListener('click', logout);
+
+      $('saveEditBtn').addEventListener('click', saveEdit);
+      $('cancelEditBtn').addEventListener('click', closeEdit);
+      $('editModal').addEventListener('click', e => {
+        if (e.target === $('editModal')) closeEdit();
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && $('editModal').classList.contains('show')) closeEdit();
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
