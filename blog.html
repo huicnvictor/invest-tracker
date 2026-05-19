@@ -54,9 +54,13 @@
       user-select: none;
     }
     .logo-dot {
-      width: 10px; height: 10px; background: var(--accent);
+      width: 18px; height: 18px; background: var(--accent);
       border-radius: 50%; display: inline-block; cursor: pointer;
+      box-shadow: 0 0 0 0 var(--accent-soft);
+      transition: box-shadow 0.18s, transform 0.18s;
     }
+    .logo-dot:hover { box-shadow: 0 0 0 6px var(--accent-soft); transform: scale(1.08); }
+    body.admin .logo-dot { background: var(--success); }
     .nav-links { display: flex; gap: 0.4rem; }
     .nav-links a {
       text-decoration: none; color: var(--text-2); font-size: 0.875rem;
@@ -307,6 +311,57 @@
       border-radius: var(--radius-sm);
     }
     body.dirty .dirty-indicator { display: inline-block; }
+
+    /* ── PASSWORD MODAL ── */
+    .pw-row {
+      position: relative;
+    }
+    .pw-row input {
+      padding-right: 2.4rem;
+    }
+    .pw-toggle {
+      position: absolute; right: 0.5rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; padding: 0.35rem;
+      cursor: pointer; color: var(--text-3);
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 4px;
+    }
+    .pw-toggle:hover { color: var(--text); background: var(--surface-2); }
+    .pw-toggle svg { width: 18px; height: 18px; }
+
+    /* ── EDITOR TOOLBAR ── */
+    .editor-toolbar {
+      display: flex; gap: 0.4rem; flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+    .tool-btn {
+      font-family: inherit; font-size: 0.82rem; font-weight: 500;
+      padding: 0.4rem 0.7rem; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface-2);
+      color: var(--text-2); cursor: pointer;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      transition: all 0.15s;
+    }
+    .tool-btn:hover { color: var(--text); border-color: var(--border-strong); }
+    .tool-btn.recording { color: var(--danger); border-color: var(--danger); }
+    .tool-btn.recording::before {
+      content: ''; width: 8px; height: 8px;
+      background: var(--danger); border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .post-body img {
+      max-width: 100%; height: auto;
+      border-radius: var(--radius-sm);
+      margin: 0.6rem 0;
+      border: 1px solid var(--border);
+    }
+    .post-body audio {
+      width: 100%; margin: 0.6rem 0;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -391,12 +446,69 @@
       </div>
       <div class="field">
         <label for="editBody">正文（HTML）</label>
+        <div class="editor-toolbar">
+          <button type="button" class="tool-btn" id="insertImgBtn" title="插入图片">🖼 图片</button>
+          <button type="button" class="tool-btn" id="insertAudioBtn" title="插入音频文件">🎵 音频</button>
+          <button type="button" class="tool-btn" id="recordBtn" title="录音">🎙 录音</button>
+          <button type="button" class="tool-btn" id="insertH3Btn" title="插入小标题">H3</button>
+          <button type="button" class="tool-btn" id="insertPBtn" title="插入段落">P</button>
+          <button type="button" class="tool-btn" id="insertListBtn" title="插入列表">• 列表</button>
+          <input type="file" id="imgFileInput" accept="image/*" style="display:none;">
+          <input type="file" id="audioFileInput" accept="audio/*" style="display:none;">
+        </div>
         <textarea id="editBody" class="body-area" placeholder="&lt;h3&gt;小标题&lt;/h3&gt;&#10;&lt;p&gt;段落内容&lt;/p&gt;&#10;&lt;ul&gt;&#10;  &lt;li&gt;条目&lt;/li&gt;&#10;&lt;/ul&gt;"></textarea>
-        <div class="helper">支持的标签：h3、p、ul、ol、li、code、strong、a。</div>
+        <div class="helper">支持 h3、p、ul、ol、li、code、strong、a、img、audio。图片/音频会以 base64 内嵌，文件大小直接影响 posts.js 体积。</div>
       </div>
       <div class="modal-actions">
         <button class="btn" id="cancelEditBtn">取消</button>
         <button class="btn btn-primary" id="saveEditBtn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSWORD MODAL -->
+  <div class="modal-overlay" id="pwModal">
+    <div class="modal" style="max-width: 380px;">
+      <div class="modal-title" id="pwTitle">管理员登录</div>
+      <div class="field">
+        <label for="pwInput" id="pwLabel">密码</label>
+        <div class="pw-row">
+          <input type="password" id="pwInput" autocomplete="current-password" />
+          <button type="button" class="pw-toggle" id="pwToggle" title="显示/隐藏密码" aria-label="切换密码可见">
+            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="field" id="pwConfirmField" style="display:none;">
+        <label for="pwConfirm">再输一次确认</label>
+        <div class="pw-row">
+          <input type="password" id="pwConfirm" autocomplete="new-password" />
+        </div>
+      </div>
+      <div class="helper" id="pwHelper" style="margin-top:-0.6rem; margin-bottom:0.8rem;"></div>
+      <div class="modal-actions">
+        <button class="btn" id="pwCancelBtn">取消</button>
+        <button class="btn btn-primary" id="pwSubmitBtn">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECORDER MODAL -->
+  <div class="modal-overlay" id="recModal">
+    <div class="modal" style="max-width: 420px; text-align: center;">
+      <div class="modal-title">录音</div>
+      <div id="recTime" style="font-family:'JetBrains Mono',monospace; font-size:2rem; color:var(--text); margin: 1rem 0;">00:00</div>
+      <div style="display:flex; gap:0.6rem; justify-content:center; margin-bottom:1rem;">
+        <button class="btn btn-primary" id="recStartBtn">开始</button>
+        <button class="btn btn-danger" id="recStopBtn" style="display:none;">停止</button>
+      </div>
+      <audio id="recPreview" controls style="width:100%; display:none; margin-bottom:1rem;"></audio>
+      <div class="modal-actions">
+        <button class="btn" id="recCancelBtn">取消</button>
+        <button class="btn btn-primary" id="recInsertBtn" style="display:none;">插入</button>
       </div>
     </div>
   </div>
@@ -443,7 +555,12 @@
     }
 
     function persist() {
-      localStorage.setItem(LS_DATA, JSON.stringify(state));
+      try {
+        localStorage.setItem(LS_DATA, JSON.stringify(state));
+      } catch (err) {
+        toast('localStorage 满了：图片/音频太大。请先导出 posts.js 备份，然后删除一些大附件。', 'danger');
+        return;
+      }
       dirty = true;
       document.body.classList.add('dirty');
     }
@@ -667,23 +784,81 @@
       return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    async function tryUnlock() {
+    function openPwModal({ title, helper, needConfirm, onSubmit }) {
+      $('pwTitle').textContent = title;
+      $('pwHelper').textContent = helper || '';
+      $('pwConfirmField').style.display = needConfirm ? 'block' : 'none';
+      $('pwInput').value = '';
+      $('pwConfirm').value = '';
+      $('pwInput').type = 'password';
+      $('pwConfirm').type = 'password';
+      setEyeState(false);
+      $('pwModal').classList.add('show');
+      setTimeout(() => $('pwInput').focus(), 50);
+
+      const submit = async () => {
+        const pw = $('pwInput').value;
+        if (!pw) { toast('请输入密码', 'warning'); return; }
+        if (needConfirm && pw !== $('pwConfirm').value) {
+          toast('两次输入不一致', 'danger'); return;
+        }
+        const ok = await onSubmit(pw);
+        if (ok) closePwModal();
+      };
+      const cancel = () => closePwModal();
+      $('pwSubmitBtn').onclick = submit;
+      $('pwCancelBtn').onclick = cancel;
+      $('pwInput').onkeydown = e => { if (e.key === 'Enter') needConfirm ? $('pwConfirm').focus() : submit(); };
+      $('pwConfirm').onkeydown = e => { if (e.key === 'Enter') submit(); };
+    }
+
+    function closePwModal() {
+      $('pwModal').classList.remove('show');
+      $('pwInput').value = '';
+      $('pwConfirm').value = '';
+    }
+
+    function setEyeState(visible) {
+      const path = visible
+        ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
+        : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+      $('eyeIcon').innerHTML = path;
+    }
+
+    function togglePwVisible() {
+      const next = $('pwInput').type === 'password' ? 'text' : 'password';
+      $('pwInput').type = next;
+      $('pwConfirm').type = next;
+      setEyeState(next === 'text');
+    }
+
+    function tryUnlock() {
       const stored = localStorage.getItem(LS_HASH);
       if (!stored) {
-        const pw = prompt('首次进入管理模式：设置一个密码（之后访问时输入它来解锁）');
-        if (!pw) return;
-        const pw2 = prompt('再输一次确认：');
-        if (pw !== pw2) { alert('两次输入不一致'); return; }
-        const hash = await sha256(pw);
-        localStorage.setItem(LS_HASH, hash);
-        enterAdmin();
-        toast('密码已设置，进入管理模式', 'success');
+        openPwModal({
+          title: '首次进入管理模式',
+          helper: '设置一个密码，之后访问时用它解锁。',
+          needConfirm: true,
+          onSubmit: async (pw) => {
+            const hash = await sha256(pw);
+            localStorage.setItem(LS_HASH, hash);
+            enterAdmin();
+            toast('密码已设置，进入管理模式', 'success');
+            return true;
+          }
+        });
       } else {
-        const pw = prompt('输入管理员密码：');
-        if (!pw) return;
-        const hash = await sha256(pw);
-        if (hash !== stored) { toast('密码错误', 'danger'); return; }
-        enterAdmin();
+        openPwModal({
+          title: '管理员登录',
+          helper: '',
+          needConfirm: false,
+          onSubmit: async (pw) => {
+            const hash = await sha256(pw);
+            if (hash !== stored) { toast('密码错误', 'danger'); return false; }
+            enterAdmin();
+            return true;
+          }
+        });
       }
     }
 
@@ -711,6 +886,142 @@
     function showPostsView() {
       $('postsView').style.display = '';
       $('trashView').classList.remove('show');
+    }
+
+    /* ───── Editor toolbar ───── */
+
+    function insertAtCursor(text) {
+      const ta = $('editBody');
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const before = ta.value.slice(0, start);
+      const after = ta.value.slice(end);
+      const needLeadingNl = before && !before.endsWith('\n');
+      const needTrailingNl = after && !after.startsWith('\n');
+      const out = (needLeadingNl ? '\n' : '') + text + (needTrailingNl ? '\n' : '');
+      ta.value = before + out + after;
+      const cursor = start + out.length;
+      ta.focus();
+      ta.setSelectionRange(cursor, cursor);
+    }
+
+    function fileToDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    function fmtSize(n) {
+      if (n < 1024) return n + ' B';
+      if (n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+      return (n/1024/1024).toFixed(1) + ' MB';
+    }
+
+    async function handleImageFile(file) {
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        if (!confirm(`图片 ${fmtSize(file.size)}，会让 posts.js 明显变大。继续？`)) return;
+      }
+      const url = await fileToDataURL(file);
+      const alt = file.name.replace(/\.[^.]+$/, '');
+      insertAtCursor(`<img src="${url}" alt="${escapeHtml(alt)}">`);
+      toast(`已插入图片（${fmtSize(file.size)}）`, 'success');
+    }
+
+    async function handleAudioFile(file) {
+      if (!file) return;
+      if (file.size > 8 * 1024 * 1024) {
+        if (!confirm(`音频 ${fmtSize(file.size)}，会让 posts.js 明显变大。继续？`)) return;
+      }
+      const url = await fileToDataURL(file);
+      insertAtCursor(`<audio controls src="${url}"></audio>`);
+      toast(`已插入音频（${fmtSize(file.size)}）`, 'success');
+    }
+
+    /* ───── Recorder ───── */
+
+    let recState = { mediaRecorder: null, chunks: [], stream: null, startTs: 0, timer: null, blob: null };
+
+    function openRecModal() {
+      $('recModal').classList.add('show');
+      $('recTime').textContent = '00:00';
+      $('recStartBtn').style.display = '';
+      $('recStopBtn').style.display = 'none';
+      $('recPreview').style.display = 'none';
+      $('recInsertBtn').style.display = 'none';
+      recState.blob = null;
+    }
+
+    function closeRecModal() {
+      stopRecordingHard();
+      $('recModal').classList.remove('show');
+    }
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recState.stream = stream;
+        recState.chunks = [];
+        const mr = new MediaRecorder(stream);
+        recState.mediaRecorder = mr;
+        mr.ondataavailable = e => { if (e.data.size) recState.chunks.push(e.data); };
+        mr.onstop = () => {
+          const type = mr.mimeType || 'audio/webm';
+          const blob = new Blob(recState.chunks, { type });
+          recState.blob = blob;
+          const url = URL.createObjectURL(blob);
+          const a = $('recPreview');
+          a.src = url;
+          a.style.display = 'block';
+          $('recInsertBtn').style.display = '';
+        };
+        mr.start();
+        recState.startTs = Date.now();
+        $('recStartBtn').style.display = 'none';
+        $('recStopBtn').style.display = '';
+        $('recordBtn').classList.add('recording');
+        recState.timer = setInterval(() => {
+          const s = Math.floor((Date.now() - recState.startTs) / 1000);
+          const m = Math.floor(s / 60).toString().padStart(2, '0');
+          const ss = (s % 60).toString().padStart(2, '0');
+          $('recTime').textContent = `${m}:${ss}`;
+        }, 200);
+      } catch (err) {
+        toast('无法访问麦克风：' + err.message, 'danger');
+      }
+    }
+
+    function stopRecording() {
+      if (recState.mediaRecorder && recState.mediaRecorder.state !== 'inactive') {
+        recState.mediaRecorder.stop();
+      }
+      if (recState.stream) recState.stream.getTracks().forEach(t => t.stop());
+      if (recState.timer) clearInterval(recState.timer);
+      $('recStartBtn').style.display = 'none';
+      $('recStopBtn').style.display = 'none';
+      $('recordBtn').classList.remove('recording');
+    }
+
+    function stopRecordingHard() {
+      stopRecording();
+      recState.blob = null;
+    }
+
+    async function insertRecording() {
+      if (!recState.blob) return;
+      if (recState.blob.size > 8 * 1024 * 1024) {
+        if (!confirm(`录音 ${fmtSize(recState.blob.size)}，会让 posts.js 明显变大。继续？`)) return;
+      }
+      const r = new FileReader();
+      r.onload = () => {
+        insertAtCursor(`<audio controls src="${r.result}"></audio>`);
+        closeRecModal();
+        toast(`已插入录音（${fmtSize(recState.blob.size)}）`, 'success');
+      };
+      r.readAsDataURL(recState.blob);
     }
 
     /* ───── Toast ───── */
@@ -751,8 +1062,44 @@
       $('editModal').addEventListener('click', e => {
         if (e.target === $('editModal')) closeEdit();
       });
+
+      // Password modal eye toggle
+      $('pwToggle').addEventListener('click', togglePwVisible);
+      $('pwModal').addEventListener('click', e => {
+        if (e.target === $('pwModal')) closePwModal();
+      });
+
+      // Editor toolbar
+      $('insertImgBtn').addEventListener('click', () => $('imgFileInput').click());
+      $('imgFileInput').addEventListener('change', e => {
+        handleImageFile(e.target.files[0]);
+        e.target.value = '';
+      });
+      $('insertAudioBtn').addEventListener('click', () => $('audioFileInput').click());
+      $('audioFileInput').addEventListener('change', e => {
+        handleAudioFile(e.target.files[0]);
+        e.target.value = '';
+      });
+      $('insertH3Btn').addEventListener('click', () => insertAtCursor('<h3>小标题</h3>'));
+      $('insertPBtn').addEventListener('click', () => insertAtCursor('<p>段落内容</p>'));
+      $('insertListBtn').addEventListener('click', () => insertAtCursor('<ul>\n  <li>条目</li>\n  <li>条目</li>\n</ul>'));
+
+      // Recorder
+      $('recordBtn').addEventListener('click', openRecModal);
+      $('recStartBtn').addEventListener('click', startRecording);
+      $('recStopBtn').addEventListener('click', stopRecording);
+      $('recInsertBtn').addEventListener('click', insertRecording);
+      $('recCancelBtn').addEventListener('click', closeRecModal);
+      $('recModal').addEventListener('click', e => {
+        if (e.target === $('recModal')) closeRecModal();
+      });
+
       document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && $('editModal').classList.contains('show')) closeEdit();
+        if (e.key === 'Escape') {
+          if ($('editModal').classList.contains('show')) closeEdit();
+          else if ($('pwModal').classList.contains('show')) closePwModal();
+          else if ($('recModal').classList.contains('show')) closeRecModal();
+        }
       });
     }
 
