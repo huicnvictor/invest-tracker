@@ -109,6 +109,8 @@
     port_btn_add_reason: { zh: '+ 添加理由', en: '+ Add reason' },
     port_btn_add_link:   { zh: '+ 链接', en: '+ Link' },
     port_btn_remove:     { zh: '删除', en: 'Remove' },
+    port_btn_move_up:    { zh: '上移', en: 'Move up' },
+    port_btn_move_down:  { zh: '下移', en: 'Move down' },
     port_dca_tag:        { zh: '定投', en: 'DCA' },
     port_detail_avg_price:{ zh: '平均成本', en: 'Avg cost' },
     port_detail_total_cost:{ zh: '累计投入', en: 'Total cost' },

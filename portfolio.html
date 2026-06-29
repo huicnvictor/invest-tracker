@@ -409,66 +409,90 @@
     .field-error.show { display: block; }
     .helper { font-size: 0.78rem; color: var(--text-3); margin-top: 0.35rem; }
 
-    /* ── REASONS LIST ── */
-    .reason-row {
-      background: var(--surface-2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 0.8rem 0.9rem;
+    /* ── REASONS LIST (Word-like ordered list, unified container) ── */
+    .reasons-doc {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.8rem;
       margin-bottom: 0.7rem;
     }
-    .reason-row-head {
-      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;
+    .reason-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 0.6rem;
+      padding: 0.55rem 0;
+      align-items: start;
+      border-bottom: 1px solid var(--border);
     }
+    .reason-row:last-child { border-bottom: none; }
     .reason-num {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem; font-weight: 600; color: var(--text-3);
-      background: var(--bg); border: 1px solid var(--border);
-      width: 22px; height: 22px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--text-2);
+      padding-top: 0.55rem;
+      text-align: right;
+      user-select: none;
     }
+    .reason-main { display: flex; flex-direction: column; gap: 0.4rem; }
     .reason-text-input {
-      flex: 1; font-family: inherit; font-size: 0.92rem;
-      background: var(--bg); color: var(--text);
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-      padding: 0.5rem 0.65rem; transition: border-color 0.15s;
+      width: 100%; font-family: inherit; font-size: 0.92rem;
+      background: transparent; color: var(--text);
+      border: none;
+      padding: 0.45rem 0;
+      transition: none;
     }
     .reason-text-input:focus {
-      outline: none; border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
+      outline: none;
+      background: var(--bg);
+      border-radius: 4px;
+      padding-left: 0.5rem; padding-right: 0.5rem;
     }
-    .reason-remove {
+    .reason-controls {
+      display: flex; gap: 0.15rem; padding-top: 0.4rem;
+    }
+    .reason-ctrl-btn {
       background: transparent; border: none; color: var(--text-3);
-      cursor: pointer; padding: 0.2rem 0.4rem; font-size: 1rem;
-      width: auto; transition: color 0.15s;
+      cursor: pointer; padding: 0.25rem 0.4rem; font-size: 0.85rem;
+      width: auto; transition: color 0.15s, background 0.15s;
+      border-radius: 4px;
+      line-height: 1;
     }
-    .reason-remove:hover { color: var(--danger); }
-    .links-list { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.4rem; padding-left: 1.8rem; }
-    .link-row { display: flex; gap: 0.4rem; align-items: center; }
+    .reason-ctrl-btn:hover { color: var(--text); background: var(--bg); }
+    .reason-ctrl-btn:disabled { color: var(--surface-3); cursor: not-allowed; }
+    .reason-ctrl-btn:disabled:hover { background: transparent; color: var(--surface-3); }
+    .reason-ctrl-btn.danger:hover { color: var(--danger); }
+
+    .links-list { display: flex; flex-direction: column; gap: 0.3rem; }
+    .link-row {
+      display: grid; grid-template-columns: 1fr auto; gap: 0.35rem; align-items: center;
+    }
     .link-input {
-      flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
       background: var(--bg); color: var(--text);
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-      padding: 0.4rem 0.6rem;
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 0.35rem 0.55rem;
     }
     .link-input:focus {
       outline: none; border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
+      box-shadow: 0 0 0 2px var(--accent-soft);
     }
     .link-remove {
-      background: transparent; border: 1px solid var(--border);
+      background: transparent; border: none;
       color: var(--text-3); cursor: pointer;
-      padding: 0.3rem 0.55rem; border-radius: var(--radius-sm);
-      font-size: 0.8rem; width: auto;
+      padding: 0.25rem 0.4rem; border-radius: 4px;
+      font-size: 0.8rem; width: auto; line-height: 1;
     }
-    .link-remove:hover { color: var(--danger); border-color: rgba(239,68,68,0.3); }
+    .link-remove:hover { color: var(--danger); background: var(--bg); }
     .add-link-btn {
-      background: transparent; border: 1px dashed var(--border-strong);
-      color: var(--text-3); padding: 0.35rem 0.7rem;
-      font-size: 0.78rem; font-weight: 500;
-      border-radius: var(--radius-sm); cursor: pointer;
-      margin-left: 1.8rem; width: auto;
-      font-family: inherit; transition: all 0.15s;
+      background: transparent; border: none;
+      color: var(--text-3); padding: 0.2rem 0;
+      font-size: 0.76rem; font-weight: 500;
+      cursor: pointer;
+      width: auto; text-align: left;
+      font-family: inherit; transition: color 0.15s;
     }
-    .add-link-btn:hover { color: var(--text-2); border-color: var(--border-strong); }
+    .add-link-btn:hover { color: var(--accent); }
 
     /* reason display in entry card */
     .reasons-display { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.2rem; }
@@ -1131,22 +1155,46 @@
 
     function renderReasonsList() {
       const wrap = $('reasonsList');
-      wrap.innerHTML = reasonsState.map((r, i) => `
-        <div class="reason-row" data-idx="${i}">
-          <div class="reason-row-head">
-            <div class="reason-num">${i + 1}</div>
-            <input class="reason-text-input" data-field="text" value="${escapeHTML(r.text || '')}" placeholder="${escapeHTML(t('port_reason_text_ph'))}">
-            <button type="button" class="reason-remove" data-action="remove-reason" title="${escapeHTML(t('port_btn_remove'))}">✕</button>
-          </div>
+      const total = reasonsState.length;
+
+      if (total === 0) {
+        wrap.innerHTML = '';
+        updateAddReasonBtn();
+        return;
+      }
+
+      const rowsHTML = reasonsState.map((r, i) => {
+        const links = r.links || [];
+        const linksHTML = links.length ? `
           <div class="links-list">
-            ${(r.links || []).map((l, j) => `
+            ${links.map((l, j) => `
               <div class="link-row" data-link-idx="${j}">
                 <input class="link-input" data-field="link" value="${escapeHTML(l)}" placeholder="https://...">
-                <button type="button" class="link-remove" data-action="remove-link" data-link-idx="${j}">✕</button>
+                <button type="button" class="link-remove" data-action="remove-link" data-link-idx="${j}" title="${escapeHTML(t('port_btn_remove'))}">✕</button>
               </div>`).join('')}
-          </div>
-          ${(r.links || []).length < MAX_LINKS ? `<button type="button" class="add-link-btn" data-action="add-link">${t('port_btn_add_link')}</button>` : ''}
-        </div>`).join('');
+          </div>` : '';
+        const addLinkBtn = links.length < MAX_LINKS
+          ? `<button type="button" class="add-link-btn" data-action="add-link">${t('port_btn_add_link')}</button>` : '';
+
+        const upDisabled = i === 0 ? 'disabled' : '';
+        const downDisabled = i === total - 1 ? 'disabled' : '';
+        return `
+          <div class="reason-row" data-idx="${i}">
+            <div class="reason-num">${i + 1}.</div>
+            <div class="reason-main">
+              <input class="reason-text-input" data-field="text" value="${escapeHTML(r.text || '')}" placeholder="${escapeHTML(t('port_reason_text_ph'))}">
+              ${linksHTML}
+              ${addLinkBtn}
+            </div>
+            <div class="reason-controls">
+              <button type="button" class="reason-ctrl-btn" data-action="move-up" title="${escapeHTML(t('port_btn_move_up'))}" ${upDisabled}>↑</button>
+              <button type="button" class="reason-ctrl-btn" data-action="move-down" title="${escapeHTML(t('port_btn_move_down'))}" ${downDisabled}>↓</button>
+              <button type="button" class="reason-ctrl-btn danger" data-action="remove-reason" title="${escapeHTML(t('port_btn_remove'))}">✕</button>
+            </div>
+          </div>`;
+      }).join('');
+
+      wrap.innerHTML = `<div class="reasons-doc">${rowsHTML}</div>`;
 
       wrap.querySelectorAll('.reason-row').forEach(row => {
         const idx = +row.dataset.idx;
@@ -1161,6 +1209,18 @@
           reasonsState.splice(idx, 1);
           renderReasonsList();
           updateAddReasonBtn();
+        });
+        const upBtn = row.querySelector('[data-action=move-up]');
+        if (upBtn && !upBtn.disabled) upBtn.addEventListener('click', () => {
+          if (idx <= 0) return;
+          [reasonsState[idx - 1], reasonsState[idx]] = [reasonsState[idx], reasonsState[idx - 1]];
+          renderReasonsList();
+        });
+        const downBtn = row.querySelector('[data-action=move-down]');
+        if (downBtn && !downBtn.disabled) downBtn.addEventListener('click', () => {
+          if (idx >= reasonsState.length - 1) return;
+          [reasonsState[idx + 1], reasonsState[idx]] = [reasonsState[idx], reasonsState[idx + 1]];
+          renderReasonsList();
         });
         row.querySelectorAll('[data-action=remove-link]').forEach((b, j) => {
           b.addEventListener('click', () => {
@@ -1177,6 +1237,7 @@
           }
         });
       });
+      updateAddReasonBtn();
     }
 
     function updateAddReasonBtn() {
