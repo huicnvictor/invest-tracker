@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Price Alerts — Invest Tracker</title>
+  <title>价格提醒 — Invest Tracker</title>
   <link rel="icon" type="image/x-icon" href="icon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +33,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
       font-size: 15px;
       line-height: 1.55;
       min-height: 100vh;
@@ -45,7 +45,21 @@
     header {
       display: flex; justify-content: space-between; align-items: center;
       padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem;
+      gap: 1rem; flex-wrap: wrap;
     }
+    .nav-wrap { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .lang-switch {
+      display: inline-flex; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 999px; padding: 2px;
+    }
+    .lang-btn {
+      background: transparent; border: none; color: var(--text-3);
+      font-family: inherit; font-size: 0.72rem; font-weight: 600;
+      padding: 0.3rem 0.65rem; border-radius: 999px; cursor: pointer;
+      transition: all 0.15s; width: auto; letter-spacing: 0.04em;
+    }
+    .lang-btn:hover { color: var(--text); }
+    .lang-btn.active { background: var(--accent); color: #fff; }
     .logo {
       font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em;
       display: flex; align-items: center; gap: 0.6rem; color: var(--text);
@@ -167,38 +181,47 @@
   <div class="container">
     <header>
       <div class="logo"><span class="logo-dot"></span>Invest Tracker</div>
-      <nav class="nav-links">
-        <a href="index.html">FIRE</a>
-        <a href="alerts.html" class="active">Alerts</a>
-        <a href="library.html">Library</a>
-        <a href="blog.html">Blog</a>
-      </nav>
+      <div class="nav-wrap">
+        <nav class="nav-links">
+          <a href="index.html" data-i18n="nav_fire">FIRE 计算器</a>
+          <a href="portfolio.html" data-i18n="nav_portfolio">投资组合</a>
+          <a href="alerts.html" class="active" data-i18n="nav_alerts">价格提醒</a>
+          <a href="library.html" data-i18n="nav_library">知识库</a>
+          <a href="blog.html" data-i18n="nav_blog">博客</a>
+        </nav>
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="zh">中</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
-    <span class="eyebrow">Live</span>
-    <h1>Price alerts</h1>
-    <p class="lede">A scheduled job checks these tickers four times per weekday. When a price crosses your low or high, an email goes to your inbox.</p>
+    <span class="eyebrow" data-i18n="alerts_eyebrow">实时</span>
+    <h1 data-i18n="alerts_h1">价格提醒</h1>
+    <p class="lede" data-i18n="alerts_lede">定时任务每个工作日检查 4 次,价格触及你设的低位/高位时邮件到你的收件箱。</p>
 
     <div class="meta-row">
-      <div class="last-check" id="lastCheck">Loading…</div>
-      <a class="btn-link" href="https://github.com/huicnvictor/invest-tracker/actions/workflows/check-prices.yml" target="_blank">Run check now ↗</a>
+      <div class="last-check" id="lastCheck" data-i18n="alerts_loading">加载中…</div>
+      <a class="btn-link" href="https://github.com/huicnvictor/invest-tracker/actions/workflows/check-prices.yml" target="_blank" data-i18n="alerts_run_btn">立即检查 ↗</a>
     </div>
 
     <div class="ticker-grid" id="tickerGrid"></div>
 
     <div class="help-card">
-      <div class="card-title">Set or change your thresholds</div>
+      <div class="card-title" data-i18n="alerts_help_title">设置或修改阈值</div>
       <ol>
-        <li>Open <a href="https://github.com/huicnvictor/invest-tracker/edit/main/watchlist.json" target="_blank"><code>watchlist.json</code></a> on GitHub.</li>
-        <li>Fill in <code>"low"</code> and <code>"high"</code> numbers for each ticker (leave as <code>null</code> to skip that side).</li>
-        <li>Commit. The next scheduled run will use the new values.</li>
-        <li>To check immediately, click <strong>Run check now</strong> above.</li>
+        <li><span data-i18n="alerts_help_1_pre">在 GitHub 上打开 </span><a href="https://github.com/huicnvictor/invest-tracker/edit/main/watchlist.json" target="_blank"><code>watchlist.json</code></a><span data-i18n="alerts_help_1_post">。</span></li>
+        <li data-i18n="alerts_help_2">为每个股票填入 low 和 high(不需要的一侧留 null)。</li>
+        <li data-i18n="alerts_help_3">提交。下次定时检查会使用新值。</li>
+        <li><span data-i18n="alerts_help_4_pre">想立即检查,点击上方的「</span><strong data-i18n="alerts_help_run">立即检查</strong><span data-i18n="alerts_help_4_post">」。</span></li>
       </ol>
     </div>
   </div>
 
+  <script src="i18n.js"></script>
   <script>
-    const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', HKD: 'HK$', CAD: 'C$' };
+    const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', HKD: 'HK$', CAD: 'C$', CNY: '¥', JPY: '¥' };
+    let cachedData = null;
 
     function fmtPrice(price, currency) {
       const sym = CURRENCY_SYMBOLS[currency] || '';
@@ -206,24 +229,21 @@
     }
 
     function fmtTime(iso) {
-      if (!iso) return 'never';
+      if (!iso) return '';
       return new Date(iso).toLocaleString();
     }
 
     function statusFor(price, low, high) {
-      if (price == null) return { cls: 'unset', text: 'No data yet' };
-      if (low == null && high == null) return { cls: 'unset', text: 'No thresholds set' };
-      if (high != null && price >= high) return { cls: 'high', text: 'Above high · stop' };
-      if (low != null && price <= low) return { cls: 'low', text: 'Below low · buy' };
-      return { cls: 'ok', text: 'In range' };
+      if (price == null) return { cls: 'unset', text: t('alerts_status_nodata') };
+      if (low == null && high == null) return { cls: 'unset', text: t('alerts_status_nothresh') };
+      if (high != null && price >= high) return { cls: 'high', text: t('alerts_status_above') };
+      if (low != null && price <= low) return { cls: 'low', text: t('alerts_status_below') };
+      return { cls: 'ok', text: t('alerts_status_in') };
     }
 
-    async function load() {
-      const [watchlist, state] = await Promise.all([
-        fetch('./watchlist.json?t=' + Date.now()).then(r => r.json()),
-        fetch('./state.json?t=' + Date.now()).then(r => r.json()).catch(() => ({ tickers: {} }))
-      ]);
-
+    function render() {
+      if (!cachedData) return;
+      const { watchlist, state } = cachedData;
       const grid = document.getElementById('tickerGrid');
       grid.innerHTML = '';
 
@@ -241,14 +261,14 @@
 
         const lowStr = ticker.low != null
           ? `<span class="threshold-val">${fmtPrice(ticker.low, cur)}</span>`
-          : `<span class="threshold-val unset">not set</span>`;
+          : `<span class="threshold-val unset">${t('alerts_unset')}</span>`;
         const highStr = ticker.high != null
           ? `<span class="threshold-val">${fmtPrice(ticker.high, cur)}</span>`
-          : `<span class="threshold-val unset">not set</span>`;
+          : `<span class="threshold-val unset">${t('alerts_unset')}</span>`;
 
         const priceStr = price != null
           ? `<div class="price">${fmtPrice(price, cur)}</div>`
-          : `<div class="price unknown">awaiting first check</div>`;
+          : `<div class="price unknown">${t('alerts_waiting')}</div>`;
 
         const card = document.createElement('div');
         card.className = 'ticker-card';
@@ -260,8 +280,8 @@
             </div>
             ${priceStr}
             <div class="thresholds">
-              <div class="threshold-item"><span class="threshold-label">Low</span> ${lowStr}</div>
-              <div class="threshold-item"><span class="threshold-label">High</span> ${highStr}</div>
+              <div class="threshold-item"><span class="threshold-label">${t('alerts_low_label')}</span> ${lowStr}</div>
+              <div class="threshold-item"><span class="threshold-label">${t('alerts_high_label')}</span> ${highStr}</div>
             </div>
           </div>
           <div class="status ${status.cls}">${status.text}</div>
@@ -269,12 +289,24 @@
         grid.appendChild(card);
       }
 
-      document.getElementById('lastCheck').innerHTML = latestCheck
-        ? `Last checked <strong>${fmtTime(latestCheck)}</strong>`
-        : `No checks run yet. Click <strong>Run check now</strong> to test, or wait for the next scheduled slot.`;
+      const lastEl = document.getElementById('lastCheck');
+      lastEl.removeAttribute('data-i18n');
+      lastEl.innerHTML = latestCheck
+        ? `${t('alerts_last_pre')}<strong>${fmtTime(latestCheck)}</strong>`
+        : t('alerts_never');
     }
 
-    load();
+    async function loadData() {
+      const [watchlist, state] = await Promise.all([
+        fetch('./watchlist.json?t=' + Date.now()).then(r => r.json()),
+        fetch('./state.json?t=' + Date.now()).then(r => r.json()).catch(() => ({ tickers: {} }))
+      ]);
+      cachedData = { watchlist, state };
+      render();
+    }
+
+    document.addEventListener('i18n:change', render);
+    loadData();
   </script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Library — Invest Tracker</title>
+  <title>知识库 — Invest Tracker</title>
   <link rel="icon" type="image/x-icon" href="icon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,7 @@
     }
     body {
       background: var(--bg); color: var(--text);
-      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
       font-size: 15px; line-height: 1.55; min-height: 100vh;
       padding: 2rem 6% 5rem; -webkit-font-smoothing: antialiased;
     }
@@ -27,13 +27,15 @@
     header {
       display: flex; justify-content: space-between; align-items: center;
       padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem;
+      gap: 1rem; flex-wrap: wrap;
     }
     .logo {
       font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em;
       display: flex; align-items: center; gap: 0.6rem; color: var(--text);
     }
     .logo-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; display: inline-block; }
-    .nav-links { display: flex; gap: 0.4rem; }
+    .nav-wrap { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .nav-links { display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .nav-links a {
       text-decoration: none; color: var(--text-2); font-size: 0.875rem;
       font-weight: 500; padding: 0.45rem 0.9rem; border-radius: var(--radius-sm);
@@ -41,6 +43,18 @@
     }
     .nav-links a:hover { color: var(--text); background: var(--surface); }
     .nav-links a.active { color: var(--accent); background: var(--accent-soft); }
+    .lang-switch {
+      display: inline-flex; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 999px; padding: 2px;
+    }
+    .lang-btn {
+      background: transparent; border: none; color: var(--text-3);
+      font-family: inherit; font-size: 0.72rem; font-weight: 600;
+      padding: 0.3rem 0.65rem; border-radius: 999px; cursor: pointer;
+      transition: all 0.15s; width: auto; letter-spacing: 0.04em;
+    }
+    .lang-btn:hover { color: var(--text); }
+    .lang-btn.active { background: var(--accent); color: #fff; }
 
     .eyebrow {
       display: inline-block; font-size: 0.72rem; font-weight: 600;
@@ -71,23 +85,31 @@
   <div class="container">
     <header>
       <div class="logo"><span class="logo-dot"></span>Invest Tracker</div>
-      <nav class="nav-links">
-        <a href="index.html">FIRE</a>
-        <a href="alerts.html">Alerts</a>
-        <a href="library.html" class="active">Library</a>
-        <a href="blog.html">Blog</a>
-      </nav>
+      <div class="nav-wrap">
+        <nav class="nav-links">
+          <a href="index.html" data-i18n="nav_fire">FIRE 计算器</a>
+          <a href="portfolio.html" data-i18n="nav_portfolio">投资组合</a>
+          <a href="alerts.html" data-i18n="nav_alerts">价格提醒</a>
+          <a href="library.html" class="active" data-i18n="nav_library">知识库</a>
+          <a href="blog.html" data-i18n="nav_blog">博客</a>
+        </nav>
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="zh">中</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
-    <span class="eyebrow">Coming next</span>
-    <h1>Investing knowledge base</h1>
-    <p class="lede">Send a link to a video, article, or book and it gets added with a short summary, tags, and source.</p>
+    <span class="eyebrow" data-i18n="lib_eyebrow">即将上线</span>
+    <h1 data-i18n="lib_h1">投资知识库</h1>
+    <p class="lede" data-i18n="lib_lede">发视频、文章或书籍的链接给它,会自动加上摘要、标签和来源。</p>
 
     <div class="card">
-      <div class="card-title">What goes here</div>
-      <p>Drop YouTube videos, blog posts, or book titles. Each entry gets categorized by tag (value, index, macro, behavioral...) and source.</p>
-      <p>Output is a single browsable page with filters by tag and source.</p>
+      <div class="card-title" data-i18n="lib_card_title">这里会有什么</div>
+      <p data-i18n="lib_card_p1">丢进 YouTube 视频、博客文章或书名。每条记录会按标签(价值投资、指数、宏观、行为金融…)和来源归类。</p>
+      <p data-i18n="lib_card_p2">输出是一个可按标签和来源过滤的浏览页面。</p>
     </div>
   </div>
+  <script src="i18n.js"></script>
 </body>
 </html>

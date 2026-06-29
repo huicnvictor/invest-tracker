@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>投资组合 — Invest Tracker</title>
+  <link rel="icon" type="image/x-icon" href="icon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #111113;
+      --surface: #18181B;
+      --surface-2: #1F1F23;
+      --surface-3: #27272A;
+      --border: #27272A;
+      --border-strong: #3F3F46;
+      --accent: #3B82F6;
+      --accent-hover: #2563EB;
+      --accent-soft: rgba(59, 130, 246, 0.12);
+      --text: #FAFAFA;
+      --text-2: #A1A1AA;
+      --text-3: #71717A;
+      --success: #10B981;
+      --success-soft: rgba(16, 185, 129, 0.12);
+      --danger: #EF4444;
+      --danger-soft: rgba(239, 68, 68, 0.12);
+      --warning: #F59E0B;
+      --warning-soft: rgba(245, 158, 11, 0.12);
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      min-height: 100vh;
+      padding: 2rem 6% 5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem;
+      gap: 1rem; flex-wrap: wrap;
+    }
+    .logo {
+      font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em;
+      display: flex; align-items: center; gap: 0.6rem; color: var(--text);
+    }
+    .logo-dot { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; display: inline-block; }
+    .nav-wrap { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .nav-links { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .nav-links a {
+      text-decoration: none; color: var(--text-2); font-size: 0.875rem;
+      font-weight: 500; padding: 0.45rem 0.9rem; border-radius: var(--radius-sm);
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+    .nav-links a.active { color: var(--accent); background: var(--accent-soft); }
+
+    .lang-switch {
+      display: inline-flex; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 999px; padding: 2px;
+    }
+    .lang-btn {
+      background: transparent; border: none; color: var(--text-3);
+      font-family: inherit; font-size: 0.72rem; font-weight: 600;
+      padding: 0.3rem 0.65rem; border-radius: 999px; cursor: pointer;
+      transition: all 0.15s; width: auto; letter-spacing: 0.04em;
+    }
+    .lang-btn:hover { color: var(--text); }
+    .lang-btn.active { background: var(--accent); color: #fff; }
+
+    .eyebrow {
+      display: inline-block; font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); background: var(--accent-soft);
+      padding: 0.3rem 0.7rem; border-radius: var(--radius-sm); margin-bottom: 1.1rem;
+    }
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700;
+      letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 0.7rem;
+    }
+    .lede { max-width: 640px; color: var(--text-2); font-size: 1rem; margin-bottom: 2rem; }
+
+    /* ── SUMMARY ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.9rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 760px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+    }
+    .summary-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 0.5rem;
+    }
+    .summary-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem; font-weight: 500; color: var(--text); line-height: 1.1;
+    }
+    .summary-value.up { color: var(--success); }
+    .summary-value.down { color: var(--danger); }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.3rem; flex-wrap: wrap; gap: 0.8rem;
+    }
+    .filter-tabs { display: flex; gap: 0.3rem; }
+    .filter-tabs button {
+      background: var(--surface); color: var(--text-2); border: 1px solid var(--border);
+      padding: 0.45rem 0.9rem; font-size: 0.82rem; font-weight: 500;
+      border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s;
+      font-family: inherit; width: auto;
+    }
+    .filter-tabs button:hover { color: var(--text); border-color: var(--border-strong); }
+    .filter-tabs button.active {
+      background: var(--accent-soft); color: var(--accent); border-color: rgba(59,130,246,0.3);
+    }
+    .toolbar-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .btn {
+      background: var(--accent); color: #fff; border: 1px solid var(--accent);
+      padding: 0.55rem 1rem; font-size: 0.85rem; font-weight: 600;
+      border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s;
+      font-family: inherit; width: auto;
+    }
+    .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn.ghost {
+      background: var(--surface); color: var(--text-2); border-color: var(--border);
+    }
+    .btn.ghost:hover { color: var(--text); border-color: var(--border-strong); }
+    .btn.danger {
+      background: transparent; color: var(--danger); border-color: rgba(239,68,68,0.3);
+    }
+    .btn.danger:hover { background: var(--danger-soft); }
+
+    /* ── ENTRY CARDS ── */
+    .entries { display: grid; gap: 1rem; }
+    .entry-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .entry-head {
+      padding: 1.2rem 1.4rem;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 1.2rem;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .entry-head:hover { background: var(--surface-2); }
+    @media (max-width: 700px) {
+      .entry-head { grid-template-columns: 1fr; gap: 0.7rem; }
+    }
+    .entry-id { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; }
+    .entry-name { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+    .entry-sym {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+      color: var(--text-3); letter-spacing: 0.04em;
+    }
+    .entry-meta {
+      font-size: 0.78rem; color: var(--text-3); margin-top: 0.25rem;
+      display: flex; gap: 0.8rem; flex-wrap: wrap;
+    }
+    .entry-pl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.15rem; font-weight: 500; text-align: right;
+    }
+    .entry-pl-sub { font-size: 0.72rem; color: var(--text-3); margin-top: 0.2rem; }
+    .entry-pl.up { color: var(--success); }
+    .entry-pl.down { color: var(--danger); }
+    .status-badge {
+      padding: 0.35rem 0.7rem; border-radius: var(--radius-sm);
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; border: 1px solid;
+      white-space: nowrap;
+    }
+    .status-badge.holding {
+      background: var(--accent-soft); color: var(--accent); border-color: rgba(59,130,246,0.3);
+    }
+    .status-badge.sold {
+      background: var(--surface-2); color: var(--text-2); border-color: var(--border);
+    }
+
+    /* ── EXPANDED DETAIL ── */
+    .entry-body {
+      display: none;
+      padding: 0 1.4rem 1.4rem;
+      border-top: 1px solid var(--border);
+    }
+    .entry-card.open .entry-body { display: block; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+      margin: 1.2rem 0 1.3rem;
+    }
+    @media (max-width: 760px) { .detail-grid { grid-template-columns: repeat(2, 1fr); } }
+    .detail-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.7rem 0.85rem;
+    }
+    .detail-label {
+      font-size: 0.66rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 0.3rem;
+    }
+    .detail-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem; font-weight: 500; color: var(--text);
+    }
+    .detail-value.text {
+      font-family: 'Inter', sans-serif; font-size: 0.88rem; color: var(--text-2);
+    }
+    .reason-block {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem 1rem;
+      margin-bottom: 1.2rem;
+      font-size: 0.9rem;
+      color: var(--text-2);
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+    .reason-block.empty { color: var(--text-3); font-style: italic; }
+
+    .chart-wrap {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.2rem;
+    }
+    .chart-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .chart-title {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3);
+    }
+    .chart-empty {
+      color: var(--text-3); font-size: 0.85rem; padding: 1.5rem 0; text-align: center;
+    }
+    .chart-canvas { position: relative; height: 240px; }
+
+    .entry-actions {
+      display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;
+    }
+
+    /* ── SYNC PANEL ── */
+    .sync-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.3rem;
+    }
+    .sync-panel h4 {
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3);
+      margin-bottom: 0.9rem; padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sync-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 700px) { .sync-row { grid-template-columns: 1fr; } }
+    .sync-col-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--text-3); margin-bottom: 0.45rem;
+    }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 0.4rem; min-height: 1.6rem; }
+    .chip {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+      padding: 0.25rem 0.55rem; border-radius: 6px;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2);
+    }
+    .chip.new { background: var(--warning-soft); color: var(--warning); border-color: rgba(245,158,11,0.3); }
+    .chip.empty { color: var(--text-3); border-style: dashed; }
+    .sync-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .json-preview {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 0.7rem 0.85rem;
+      color: var(--text-2); white-space: pre; overflow-x: auto;
+      margin-top: 0.7rem; max-height: 200px; overflow-y: auto;
+    }
+
+    /* ── EMPTY ── */
+    .empty {
+      background: var(--surface);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: var(--text-3);
+    }
+    .empty h3 { color: var(--text-2); margin-bottom: 0.5rem; font-size: 1rem; }
+
+    /* ── MODAL / FORM ── */
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+      display: none; align-items: flex-start; justify-content: center;
+      z-index: 50; padding: 3rem 1rem 2rem; overflow-y: auto;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%; max-width: 640px;
+      padding: 1.8rem;
+    }
+    .modal-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.4rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title {
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3);
+    }
+    .modal-close {
+      background: transparent; border: none; color: var(--text-3);
+      cursor: pointer; font-size: 1.2rem; padding: 0.2rem 0.5rem;
+      width: auto;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .field { margin-bottom: 1rem; }
+    .field-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;
+    }
+    .field-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+    @media (max-width: 560px) {
+      .field-row, .field-row.triple { grid-template-columns: 1fr; }
+    }
+    label {
+      display: block; font-size: 0.75rem; font-weight: 500;
+      color: var(--text-2); margin-bottom: 0.35rem;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 500;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    textarea { resize: vertical; min-height: 80px; font-family: 'Inter', "PingFang SC", "Microsoft YaHei", sans-serif; }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .checkbox-row {
+      display: flex; align-items: center; gap: 0.6rem;
+      margin: 0.4rem 0 0.6rem;
+    }
+    .checkbox-row input[type=checkbox] {
+      width: auto; cursor: pointer; accent-color: var(--accent);
+    }
+    .checkbox-row label {
+      margin: 0; cursor: pointer; color: var(--text-2); font-weight: 500;
+    }
+    .section-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-3);
+      margin: 1.3rem 0 0.8rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-label:first-child { margin-top: 0; }
+
+    .modal-actions {
+      display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 1.6rem;
+    }
+    .modal-actions .btn { width: auto; }
+
+    .field-error {
+      color: var(--danger); font-size: 0.78rem; margin-top: 0.3rem;
+      display: none;
+    }
+    .field-error.show { display: block; }
+
+    /* ── FOOTER ── */
+    footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--text-3);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="logo"><span class="logo-dot"></span>Invest Tracker</div>
+      <div class="nav-wrap">
+        <nav class="nav-links">
+          <a href="index.html" data-i18n="nav_fire">FIRE 计算器</a>
+          <a href="portfolio.html" class="active" data-i18n="nav_portfolio">投资组合</a>
+          <a href="alerts.html" data-i18n="nav_alerts">价格提醒</a>
+          <a href="library.html" data-i18n="nav_library">知识库</a>
+          <a href="blog.html" data-i18n="nav_blog">博客</a>
+        </nav>
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="zh">中</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
+    </header>
+
+    <span class="eyebrow" data-i18n="port_eyebrow">交易</span>
+    <h1 data-i18n="port_h1">投资组合</h1>
+    <p class="lede" data-i18n="port_lede">记录每一笔买卖 — 价格、券商、税率、买入理由。数据存在浏览器本地，记得用「导出」备份。</p>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label" data-i18n="port_sum_open">持仓笔数</div>
+        <div class="summary-value" id="sumOpen">0</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label" data-i18n="port_sum_invested">投入金额</div>
+        <div class="summary-value" id="sumInvested">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label" data-i18n="port_sum_realized">已实现盈亏</div>
+        <div class="summary-value" id="sumRealized">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label" data-i18n="port_sum_unrealized">未实现盈亏</div>
+        <div class="summary-value" id="sumUnrealized">—</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="filter-tabs">
+        <button data-filter="all" class="active" data-i18n="port_filter_all">全部</button>
+        <button data-filter="holding" data-i18n="port_filter_holding">持有中</button>
+        <button data-filter="sold" data-i18n="port_filter_sold">已卖出</button>
+      </div>
+      <div class="toolbar-actions">
+        <button class="btn ghost" id="syncBtn" data-i18n="port_btn_sync">同步追踪</button>
+        <button class="btn ghost" id="importBtn" data-i18n="port_btn_import">导入</button>
+        <button class="btn ghost" id="exportBtn" data-i18n="port_btn_export">导出</button>
+        <button class="btn" id="addBtn" data-i18n="port_btn_add">+ 添加交易</button>
+      </div>
+    </div>
+
+    <div id="syncPanel" class="sync-panel" style="display:none;"></div>
+
+    <div id="entries" class="entries"></div>
+    <input type="file" id="importFile" accept="application/json" style="display:none">
+
+    <footer>
+      <div data-i18n="port_footer_l">Invest Tracker · 投资组合</div>
+      <div data-i18n="port_footer_r">数据保存在浏览器 localStorage,不会同步。</div>
+    </footer>
+  </div>
+
+  <!-- Modal: add/edit trade -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title" id="modalTitle" data-i18n="port_modal_new">新增交易</div>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+
+      <form id="tradeForm">
+        <div class="section-label" data-i18n="port_section_what">买的什么</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-symbol" data-i18n="port_f_symbol">股票代码 *</label>
+            <input id="f-symbol" data-i18n-placeholder="port_f_symbol_ph" placeholder="AAPL, SXRV.DE, BTC-USD" required>
+            <div class="field-error" id="err-symbol" data-i18n="port_f_required">必填</div>
+          </div>
+          <div class="field">
+            <label for="f-name" data-i18n="port_f_name">名称（可选）</label>
+            <input id="f-name" data-i18n-placeholder="port_f_name_ph" placeholder="苹果公司">
+          </div>
+        </div>
+        <div class="field-row triple">
+          <div class="field">
+            <label for="f-currency" data-i18n="port_f_currency">币种</label>
+            <select id="f-currency">
+              <option value="USD">USD $</option>
+              <option value="EUR">EUR €</option>
+              <option value="GBP">GBP £</option>
+              <option value="HKD">HKD</option>
+              <option value="CAD">CAD</option>
+              <option value="CNY">CNY ¥</option>
+              <option value="JPY">JPY ¥</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-broker" data-i18n="port_f_broker">券商 / App</label>
+            <input id="f-broker" data-i18n-placeholder="port_f_broker_ph" placeholder="Trade Republic, IBKR…">
+          </div>
+          <div class="field">
+            <label for="f-tax" data-i18n="port_f_tax">税率 (%)</label>
+            <input id="f-tax" type="number" step="0.01" min="0" max="100" placeholder="0">
+          </div>
+        </div>
+
+        <div class="section-label" data-i18n="port_section_buy">买入</div>
+        <div class="field-row triple">
+          <div class="field">
+            <label for="f-buyDate" data-i18n="port_f_buyDate">买入日期 *</label>
+            <input id="f-buyDate" type="date" required>
+            <div class="field-error" id="err-buyDate" data-i18n="port_f_required">必填</div>
+          </div>
+          <div class="field">
+            <label for="f-buyPrice" data-i18n="port_f_buyPrice">买入价 *</label>
+            <input id="f-buyPrice" type="number" step="any" min="0" required>
+            <div class="field-error" id="err-buyPrice" data-i18n="port_f_required">必填</div>
+          </div>
+          <div class="field">
+            <label for="f-qty" data-i18n="port_f_qty">数量 *</label>
+            <input id="f-qty" type="number" step="any" min="0" required>
+            <div class="field-error" id="err-qty" data-i18n="port_f_required">必填</div>
+          </div>
+        </div>
+
+        <div class="section-label" data-i18n="port_section_sell">卖出（可选）</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-sellDate" data-i18n="port_f_sellDate">卖出日期</label>
+            <input id="f-sellDate" type="date">
+          </div>
+          <div class="field">
+            <label for="f-sellPrice" data-i18n="port_f_sellPrice">卖出价</label>
+            <input id="f-sellPrice" type="number" step="any" min="0">
+          </div>
+        </div>
+
+        <div class="section-label" data-i18n="port_section_notes">备注</div>
+        <div class="field">
+          <label for="f-reason" data-i18n="port_f_reason">为什么买？</label>
+          <textarea id="f-reason" data-i18n-placeholder="port_f_reason_ph" placeholder="投资逻辑、信号、目标价…"></textarea>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="f-track" checked>
+          <label for="f-track" data-i18n="port_f_track">自动追踪此股票的价格历史（加入 tracked_tickers.json）</label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" id="cancelBtn" data-i18n="port_f_cancel">取消</button>
+          <button type="submit" class="btn" id="saveBtn" data-i18n="port_f_save">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script>
+    const STORAGE_KEY = 'portfolio_trades_v1';
+    const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', GBP: '£', HKD: 'HK$', CAD: 'C$', CNY: '¥', JPY: '¥' };
+    const $ = id => document.getElementById(id);
+
+    let trades = [];
+    let prices = null;
+    let trackedSymbols = null;
+    let editingId = null;
+    let activeFilter = 'all';
+    const chartInstances = {};
+
+    // ── persistence ─────────────────────────────────────────────
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        trades = raw ? JSON.parse(raw) : [];
+      } catch (e) { trades = []; }
+    }
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(trades));
+    }
+
+    async function loadPrices() {
+      try {
+        const res = await fetch('./prices.json?t=' + Date.now());
+        if (!res.ok) return;
+        prices = await res.json();
+      } catch (e) { prices = null; }
+    }
+    async function loadTracked() {
+      try {
+        const res = await fetch('./tracked_tickers.json?t=' + Date.now());
+        if (!res.ok) return;
+        const data = await res.json();
+        trackedSymbols = Array.isArray(data.symbols) ? data.symbols.map(s => s.toUpperCase()) : [];
+      } catch (e) { trackedSymbols = null; }
+    }
+
+    // ── calc ───────────────────────────────────────────────────
+    function computePL(t) {
+      const cost = t.buyPrice * t.qty;
+      const sold = !!(t.sellDate && t.sellPrice != null && t.sellPrice !== '');
+      let proceeds = null, gross = null, taxAmt = 0, net = null, currentPrice = null, unrealizedGross = null, unrealizedNet = null;
+
+      if (sold) {
+        proceeds = t.sellPrice * t.qty;
+        gross = proceeds - cost;
+        taxAmt = gross > 0 ? gross * (t.taxRate || 0) / 100 : 0;
+        net = gross - taxAmt;
+      } else if (prices && prices[t.symbol] && prices[t.symbol].length) {
+        const last = prices[t.symbol][prices[t.symbol].length - 1];
+        currentPrice = last.close;
+        unrealizedGross = (currentPrice - t.buyPrice) * t.qty;
+        const utax = unrealizedGross > 0 ? unrealizedGross * (t.taxRate || 0) / 100 : 0;
+        unrealizedNet = unrealizedGross - utax;
+      }
+      return { cost, sold, proceeds, gross, taxAmt, net, currentPrice, unrealizedGross, unrealizedNet };
+    }
+
+    function fmtMoney(n, cur) {
+      if (n == null || isNaN(n)) return '—';
+      const sym = CURRENCY_SYMBOLS[cur] || '';
+      const sign = n < 0 ? '-' : '';
+      const abs = Math.abs(n);
+      return sign + sym + abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function fmtPlusMoney(n, cur) {
+      if (n == null || isNaN(n)) return '—';
+      const sym = CURRENCY_SYMBOLS[cur] || '';
+      const sign = n > 0 ? '+' : (n < 0 ? '-' : '');
+      return sign + sym + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function fmtPct(num, denom) {
+      if (denom == null || denom === 0) return '';
+      const p = (num / denom) * 100;
+      const sign = p > 0 ? '+' : '';
+      return ` (${sign}${p.toFixed(2)}%)`;
+    }
+    function fmtQty(n) { return Number(n).toLocaleString('en-US', { maximumFractionDigits: 8 }); }
+
+    // ── summary ───────────────────────────────────────────────
+    function renderSummary() {
+      let open = 0;
+      const grouped = {};
+      for (const t of trades) {
+        const c = t.currency || 'USD';
+        grouped[c] = grouped[c] || { invested: 0, realized: 0, unrealized: 0 };
+        const pl = computePL(t);
+        if (!pl.sold) {
+          open++;
+          grouped[c].invested += pl.cost;
+          if (pl.unrealizedNet != null) grouped[c].unrealized += pl.unrealizedNet;
+        } else {
+          grouped[c].realized += pl.net;
+        }
+      }
+      $('sumOpen').textContent = open;
+      const currencies = Object.keys(grouped);
+      const renderCurField = valFn => {
+        if (currencies.length === 0) return '—';
+        return currencies.map(c => CURRENCY_SYMBOLS[c] + Math.round(valFn(grouped[c])).toLocaleString('en-US')).join(' · ');
+      };
+      $('sumInvested').textContent = renderCurField(g => g.invested);
+
+      const setSigned = (el, valFn) => {
+        if (currencies.length === 0) { el.textContent = '—'; el.className = 'summary-value'; return; }
+        const total = currencies.reduce((s, c) => s + valFn(grouped[c]), 0);
+        el.textContent = currencies.map(c => {
+          const v = valFn(grouped[c]);
+          const sign = v > 0 ? '+' : (v < 0 ? '-' : '');
+          return sign + CURRENCY_SYMBOLS[c] + Math.round(Math.abs(v)).toLocaleString('en-US');
+        }).join(' · ');
+        el.className = 'summary-value' + (total > 0 ? ' up' : total < 0 ? ' down' : '');
+      };
+      setSigned($('sumRealized'), g => g.realized);
+      setSigned($('sumUnrealized'), g => g.unrealized);
+    }
+
+    // ── list ──────────────────────────────────────────────────
+    function renderList() {
+      const wrap = $('entries');
+      Object.values(chartInstances).forEach(c => c.destroy());
+      Object.keys(chartInstances).forEach(k => delete chartInstances[k]);
+
+      const filtered = trades.filter(t => {
+        if (activeFilter === 'all') return true;
+        const sold = !!(t.sellDate && t.sellPrice != null && t.sellPrice !== '');
+        return activeFilter === 'sold' ? sold : !sold;
+      });
+
+      if (filtered.length === 0) {
+        const titleKey = trades.length === 0 ? 'port_empty_none' : 'port_empty_filter';
+        const subKey = trades.length === 0 ? 'port_empty_none_sub' : 'port_empty_filter_sub';
+        wrap.innerHTML = `<div class="empty"><h3>${t(titleKey)}</h3><div>${t(subKey)}</div></div>`;
+        return;
+      }
+
+      filtered.sort((a, b) => {
+        const aSold = !!(a.sellDate && a.sellPrice != null);
+        const bSold = !!(b.sellDate && b.sellPrice != null);
+        if (aSold !== bSold) return aSold ? 1 : -1;
+        const aD = aSold ? a.sellDate : a.buyDate;
+        const bD = bSold ? b.sellDate : b.buyDate;
+        return bD.localeCompare(aD);
+      });
+
+      wrap.innerHTML = filtered.map(tr => entryHTML(tr)).join('');
+
+      wrap.querySelectorAll('.entry-head').forEach(el => {
+        el.addEventListener('click', e => {
+          if (e.target.closest('button')) return;
+          const card = el.parentElement;
+          const id = card.dataset.id;
+          card.classList.toggle('open');
+          if (card.classList.contains('open')) {
+            drawChart(id);
+          } else if (chartInstances[id]) {
+            chartInstances[id].destroy();
+            delete chartInstances[id];
+          }
+        });
+      });
+      wrap.querySelectorAll('[data-action=edit]').forEach(b => {
+        b.addEventListener('click', e => { e.stopPropagation(); openModal(b.dataset.id); });
+      });
+      wrap.querySelectorAll('[data-action=delete]').forEach(b => {
+        b.addEventListener('click', e => {
+          e.stopPropagation();
+          if (confirm(t('port_confirm_delete'))) {
+            trades = trades.filter(x => x.id !== b.dataset.id);
+            save(); renderAll();
+          }
+        });
+      });
+      wrap.querySelectorAll('[data-action=sell]').forEach(b => {
+        b.addEventListener('click', e => { e.stopPropagation(); openModal(b.dataset.id, true); });
+      });
+    }
+
+    function entryHTML(tr) {
+      const pl = computePL(tr);
+      const cur = tr.currency || 'USD';
+      const statusClass = pl.sold ? 'sold' : 'holding';
+      const statusText = pl.sold ? t('port_status_sold') : t('port_status_holding');
+
+      let plDisplay = '', plSub = '', plClass = '';
+      if (pl.sold) {
+        plDisplay = fmtPlusMoney(pl.net, cur);
+        plSub = t('port_pl_realized') + fmtPct(pl.net, pl.cost);
+        plClass = pl.net > 0 ? 'up' : pl.net < 0 ? 'down' : '';
+      } else if (pl.unrealizedNet != null) {
+        plDisplay = fmtPlusMoney(pl.unrealizedNet, cur);
+        plSub = t('port_pl_unrealized', { price: fmtMoney(pl.currentPrice, cur) });
+        plClass = pl.unrealizedNet > 0 ? 'up' : pl.unrealizedNet < 0 ? 'down' : '';
+      } else {
+        plDisplay = fmtMoney(pl.cost, cur);
+        plSub = t('port_pl_cost');
+      }
+
+      const meta = [];
+      meta.push(t('port_meta_bought', { date: tr.buyDate }));
+      if (pl.sold) meta.push(t('port_meta_sold', { date: tr.sellDate }));
+      if (tr.broker) meta.push(tr.broker);
+      meta.push(t('port_meta_units', { qty: fmtQty(tr.qty) }));
+
+      const detailRows = [
+        [t('port_detail_buyPrice'), fmtMoney(tr.buyPrice, cur)],
+        [t('port_detail_qty'), fmtQty(tr.qty)],
+        [t('port_detail_cost'), fmtMoney(pl.cost, cur)],
+        [t('port_detail_tax'), (tr.taxRate || 0) + '%'],
+      ];
+      if (pl.sold) {
+        detailRows.push([t('port_detail_sellPrice'), fmtMoney(tr.sellPrice, cur)]);
+        detailRows.push([t('port_detail_proceeds'), fmtMoney(pl.proceeds, cur)]);
+        detailRows.push([t('port_detail_gross'), fmtPlusMoney(pl.gross, cur)]);
+        detailRows.push([t('port_detail_taxPaid'), fmtMoney(pl.taxAmt, cur)]);
+      } else if (pl.currentPrice != null) {
+        detailRows.push([t('port_detail_latest'), fmtMoney(pl.currentPrice, cur)]);
+        detailRows.push([t('port_detail_mktValue'), fmtMoney(pl.currentPrice * tr.qty, cur)]);
+        detailRows.push([t('port_detail_unrealized'), fmtPlusMoney(pl.unrealizedGross, cur)]);
+      }
+      detailRows.push([t('port_detail_broker'), tr.broker || '—']);
+
+      const detailHTML = detailRows.map(([l, v]) => `
+        <div class="detail-item">
+          <div class="detail-label">${l}</div>
+          <div class="detail-value">${v}</div>
+        </div>`).join('');
+
+      const sellBtn = pl.sold ? '' : `<button class="btn ghost" data-action="sell" data-id="${tr.id}">${t('port_action_sell')}</button>`;
+
+      return `
+        <div class="entry-card" data-id="${tr.id}">
+          <div class="entry-head">
+            <div>
+              <div class="entry-id">
+                <div class="entry-name">${escapeHTML(tr.name || tr.symbol)}</div>
+                <div class="entry-sym">${escapeHTML(tr.symbol)} · ${cur}</div>
+              </div>
+              <div class="entry-meta">${meta.map(escapeHTML).join(' · ')}</div>
+            </div>
+            <div>
+              <div class="entry-pl ${plClass}">${plDisplay}</div>
+              <div class="entry-pl-sub">${plSub}</div>
+            </div>
+            <div class="status-badge ${statusClass}">${statusText}</div>
+          </div>
+          <div class="entry-body">
+            <div class="detail-grid">${detailHTML}</div>
+            <div class="reason-block ${tr.reason ? '' : 'empty'}">${tr.reason ? escapeHTML(tr.reason) : t('port_reason_empty')}</div>
+            <div class="chart-wrap">
+              <div class="chart-head">
+                <div class="chart-title">${t('port_chart_title')}</div>
+                <div class="chart-title" id="chartStatus-${tr.id}" style="color: var(--text-3); text-transform: none; letter-spacing: 0;"></div>
+              </div>
+              <div class="chart-canvas"><canvas id="chart-${tr.id}"></canvas></div>
+            </div>
+            <div class="entry-actions">
+              ${sellBtn}
+              <button class="btn ghost" data-action="edit" data-id="${tr.id}">${t('port_action_edit')}</button>
+              <button class="btn danger" data-action="delete" data-id="${tr.id}">${t('port_action_delete')}</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function escapeHTML(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    // ── chart ────────────────────────────────────────────────
+    function drawChart(id) {
+      const tr = trades.find(x => x.id === id);
+      if (!tr) return;
+      const canvas = $(`chart-${id}`);
+      const statusEl = $(`chartStatus-${id}`);
+      if (!canvas) return;
+
+      const series = prices && prices[tr.symbol];
+      if (!series || !series.length) {
+        statusEl.textContent = prices
+          ? t('port_chart_no_data', { sym: tr.symbol })
+          : t('port_chart_no_file');
+        canvas.parentElement.style.display = 'none';
+        return;
+      }
+      canvas.parentElement.style.display = '';
+
+      const labels = series.map(p => p.date);
+      const data = series.map(p => p.close);
+      const findIdx = d => labels.findIndex(l => l >= d);
+      const buyIdx = findIdx(tr.buyDate);
+      const sellIdx = tr.sellDate ? findIdx(tr.sellDate) : -1;
+
+      const pointData = labels.map(() => null);
+      const pointColors = labels.map(() => '');
+      if (buyIdx >= 0) { pointData[buyIdx] = tr.buyPrice; pointColors[buyIdx] = '#3B82F6'; }
+      if (sellIdx >= 0 && tr.sellPrice) { pointData[sellIdx] = +tr.sellPrice; pointColors[sellIdx] = '#EF4444'; }
+
+      const cur = tr.currency || 'USD';
+      const sym = CURRENCY_SYMBOLS[cur] || '';
+
+      if (chartInstances[id]) chartInstances[id].destroy();
+      chartInstances[id] = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: tr.symbol, data, borderColor: '#3B82F6', backgroundColor: 'rgba(59,130,246,0.1)', borderWidth: 1.5, tension: 0.2, pointRadius: 0, pointHoverRadius: 4, fill: true },
+            { label: 'Trade', data: pointData, borderColor: 'transparent', backgroundColor: pointColors, pointBackgroundColor: pointColors, pointBorderColor: pointColors, pointRadius: 7, pointHoverRadius: 9, showLine: false }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#18181B', borderColor: '#27272A', borderWidth: 1,
+              titleColor: '#FAFAFA', bodyColor: '#A1A1AA',
+              callbacks: {
+                label: ctx => {
+                  if (ctx.datasetIndex === 1) {
+                    if (ctx.dataIndex === buyIdx) return t('port_chart_buy_at', { price: sym + (+tr.buyPrice).toFixed(2) });
+                    if (ctx.dataIndex === sellIdx) return t('port_chart_sell_at', { price: sym + (+tr.sellPrice).toFixed(2) });
+                    return '';
+                  }
+                  return sym + ctx.parsed.y.toFixed(2);
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#71717A', maxTicksLimit: 6, font: { size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#71717A', font: { size: 10 }, callback: v => sym + v } }
+          }
+        }
+      });
+
+      statusEl.textContent = t('port_chart_points', { n: labels.length, start: labels[0], end: labels[labels.length - 1] });
+    }
+
+    // ── modal ────────────────────────────────────────────────
+    function openModal(id, focusSell) {
+      editingId = id || null;
+      const tr = id ? trades.find(x => x.id === id) : null;
+      $('modalTitle').textContent = tr ? t('port_modal_edit') : t('port_modal_new');
+
+      $('f-symbol').value = tr ? tr.symbol : '';
+      $('f-name').value = tr ? (tr.name || '') : '';
+      $('f-currency').value = tr ? (tr.currency || 'USD') : 'USD';
+      $('f-broker').value = tr ? (tr.broker || '') : '';
+      $('f-tax').value = tr ? (tr.taxRate ?? '') : '';
+      $('f-buyDate').value = tr ? tr.buyDate : new Date().toISOString().slice(0, 10);
+      $('f-buyPrice').value = tr ? tr.buyPrice : '';
+      $('f-qty').value = tr ? tr.qty : '';
+      $('f-sellDate').value = tr ? (tr.sellDate || '') : '';
+      $('f-sellPrice').value = tr ? (tr.sellPrice ?? '') : '';
+      $('f-reason').value = tr ? (tr.reason || '') : '';
+      $('f-track').checked = tr ? (tr.track !== false) : true;
+
+      ['symbol','buyDate','buyPrice','qty'].forEach(k => $('err-' + k).classList.remove('show'));
+      $('modalBg').classList.add('open');
+      setTimeout(() => (focusSell ? $('f-sellDate') : $('f-symbol')).focus(), 50);
+    }
+    function closeModal() {
+      $('modalBg').classList.remove('open');
+      editingId = null;
+    }
+
+    function submitForm(e) {
+      e.preventDefault();
+      const symbol = $('f-symbol').value.trim().toUpperCase();
+      const buyDate = $('f-buyDate').value;
+      const buyPrice = parseFloat($('f-buyPrice').value);
+      const qty = parseFloat($('f-qty').value);
+
+      let ok = true;
+      const setErr = (k, bad) => { $('err-' + k).classList.toggle('show', bad); if (bad) ok = false; };
+      setErr('symbol', !symbol);
+      setErr('buyDate', !buyDate);
+      setErr('buyPrice', !(buyPrice >= 0));
+      setErr('qty', !(qty > 0));
+      if (!ok) return;
+
+      const sellDateRaw = $('f-sellDate').value;
+      const sellPriceRaw = $('f-sellPrice').value;
+
+      const data = {
+        symbol,
+        name: $('f-name').value.trim(),
+        currency: $('f-currency').value,
+        broker: $('f-broker').value.trim(),
+        taxRate: parseFloat($('f-tax').value) || 0,
+        buyDate,
+        buyPrice,
+        qty,
+        sellDate: sellDateRaw || null,
+        sellPrice: sellPriceRaw === '' ? null : parseFloat(sellPriceRaw),
+        reason: $('f-reason').value.trim(),
+        track: $('f-track').checked,
+      };
+
+      if (editingId) {
+        const idx = trades.findIndex(x => x.id === editingId);
+        trades[idx] = { ...trades[idx], ...data, updatedAt: new Date().toISOString() };
+      } else {
+        trades.push({
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          ...data,
+        });
+      }
+      save();
+      closeModal();
+      renderAll();
+    }
+
+    // ── export / import ──────────────────────────────────────
+    function exportData() {
+      const blob = new Blob([JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), trades }, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `portfolio-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    function importData(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          const arr = Array.isArray(parsed) ? parsed : parsed.trades;
+          if (!Array.isArray(arr)) throw new Error('Invalid file');
+          if (!confirm(t('port_confirm_import', { n: arr.length }))) return;
+          trades = arr.map(x => ({ id: x.id || crypto.randomUUID(), ...x }));
+          save(); renderAll();
+        } catch (err) {
+          alert(t('port_alert_parse', { msg: err.message }));
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ── sync panel ───────────────────────────────────────────
+    const REPO_EDIT_URL = 'https://github.com/huicnvictor/invest-tracker/edit/main/tracked_tickers.json';
+    const REPO_RUN_URL = 'https://github.com/huicnvictor/invest-tracker/actions/workflows/fetch-history.yml';
+
+    function portfolioSymbols() {
+      const set = new Set();
+      for (const tr of trades) {
+        if (tr.track !== false) set.add(tr.symbol.toUpperCase());
+      }
+      return [...set].sort();
+    }
+
+    function renderSyncPanel() {
+      const panel = $('syncPanel');
+      const port = portfolioSymbols();
+      const tracked = trackedSymbols || [];
+      const trackedSet = new Set(tracked);
+      const missing = port.filter(s => !trackedSet.has(s));
+      const extra = tracked.filter(s => !port.includes(s));
+
+      const portChips = port.length
+        ? port.map(s => `<span class="chip ${trackedSet.has(s) ? '' : 'new'}">${escapeHTML(s)}</span>`).join('')
+        : `<span class="chip empty">${t('port_sync_no_port')}</span>`;
+      const trackedChips = tracked.length
+        ? tracked.map(s => `<span class="chip">${escapeHTML(s)}</span>`).join('')
+        : `<span class="chip empty">${t('port_sync_no_tracked')}</span>`;
+
+      const merged = [...new Set([...tracked, ...port])].sort();
+      const json = JSON.stringify({ symbols: merged }, null, 2);
+
+      const note = missing.length
+        ? `<div style="color: var(--warning); font-size: 0.85rem; margin-bottom: 1rem;">${t('port_sync_missing', { n: missing.length, list: missing.join(', ') })}</div>`
+        : (extra.length
+            ? `<div style="color: var(--text-3); font-size: 0.85rem; margin-bottom: 1rem;">${t('port_sync_extra', { n: extra.length, list: extra.join(', ') })}</div>`
+            : `<div style="color: var(--success); font-size: 0.85rem; margin-bottom: 1rem;">${t('port_sync_synced')}</div>`);
+
+      panel.innerHTML = `
+        <h4>${t('port_sync_title')}</h4>
+        ${note}
+        <div class="sync-row">
+          <div>
+            <div class="sync-col-label">${t('port_sync_col_port')}</div>
+            <div class="chip-row">${portChips}</div>
+          </div>
+          <div>
+            <div class="sync-col-label">${t('port_sync_col_tracked')}</div>
+            <div class="chip-row">${trackedChips}</div>
+          </div>
+        </div>
+        <div class="sync-actions">
+          <button class="btn ghost" id="copyTickersBtn">${t('port_sync_copy')}</button>
+          <button class="btn ghost" id="downloadTickersBtn">${t('port_sync_download')}</button>
+          <a class="btn ghost" href="${REPO_EDIT_URL}" target="_blank" style="text-decoration: none;">${t('port_sync_gh')}</a>
+          <a class="btn ghost" href="${REPO_RUN_URL}" target="_blank" style="text-decoration: none;">${t('port_sync_run')}</a>
+        </div>
+        <pre class="json-preview">${escapeHTML(json)}</pre>
+      `;
+
+      $('copyTickersBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(json);
+        $('copyTickersBtn').textContent = t('port_sync_copied');
+        setTimeout(() => { $('copyTickersBtn').textContent = t('port_sync_copy'); }, 1500);
+      });
+      $('downloadTickersBtn').addEventListener('click', () => {
+        const blob = new Blob([json + '\n'], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'tracked_tickers.json'; a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    // ── bootstrap ────────────────────────────────────────────
+    function renderAll() {
+      renderSummary();
+      renderList();
+      if ($('syncPanel').style.display !== 'none') renderSyncPanel();
+    }
+
+    document.querySelectorAll('.filter-tabs button').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tabs button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        activeFilter = b.dataset.filter;
+        renderList();
+      });
+    });
+    $('addBtn').addEventListener('click', () => openModal());
+    $('syncBtn').addEventListener('click', () => {
+      const panel = $('syncPanel');
+      const isOpen = panel.style.display !== 'none';
+      panel.style.display = isOpen ? 'none' : 'block';
+      if (!isOpen) renderSyncPanel();
+    });
+    $('modalClose').addEventListener('click', closeModal);
+    $('cancelBtn').addEventListener('click', closeModal);
+    $('modalBg').addEventListener('click', e => { if (e.target === $('modalBg')) closeModal(); });
+    $('tradeForm').addEventListener('submit', submitForm);
+    $('exportBtn').addEventListener('click', exportData);
+    $('importBtn').addEventListener('click', () => $('importFile').click());
+    $('importFile').addEventListener('change', e => {
+      if (e.target.files[0]) importData(e.target.files[0]);
+      e.target.value = '';
+    });
+
+    // re-render dynamic content when language changes
+    document.addEventListener('i18n:change', () => renderAll());
+
+    load();
+    renderAll();
+    Promise.all([loadPrices(), loadTracked()]).then(() => renderAll());
+  </script>
+</body>
+</html>

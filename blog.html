@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blog — Invest Tracker</title>
+  <title>博客 — Invest Tracker</title>
   <link rel="icon" type="image/x-icon" href="icon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +34,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
       font-size: 15px;
       line-height: 1.65;
       min-height: 100vh;
@@ -47,7 +47,21 @@
     header {
       display: flex; justify-content: space-between; align-items: center;
       padding-bottom: 1.2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem;
+      gap: 1rem; flex-wrap: wrap;
     }
+    .nav-wrap { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .lang-switch {
+      display: inline-flex; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 999px; padding: 2px;
+    }
+    .lang-btn {
+      background: transparent; border: none; color: var(--text-3);
+      font-family: inherit; font-size: 0.72rem; font-weight: 600;
+      padding: 0.3rem 0.65rem; border-radius: 999px; cursor: pointer;
+      transition: all 0.15s; width: auto; letter-spacing: 0.04em;
+    }
+    .lang-btn:hover { color: var(--text); }
+    .lang-btn.active { background: var(--accent); color: #fff; }
     .logo {
       font-weight: 700; font-size: 0.95rem; letter-spacing: 0.02em;
       display: flex; align-items: center; gap: 0.6rem; color: var(--text);
@@ -369,21 +383,28 @@
 
     <header>
       <div class="logo">
-        <span class="logo-dot" id="logoDot" title="双击进入管理模式"></span>
+        <span class="logo-dot" id="logoDot" data-i18n-title="blog_logo_title" title="双击进入管理模式"></span>
         Invest Tracker
       </div>
-      <nav class="nav-links">
-        <a href="index.html">FIRE</a>
-        <a href="alerts.html">Alerts</a>
-        <a href="library.html">Library</a>
-        <a href="blog.html" class="active">Blog</a>
-      </nav>
+      <div class="nav-wrap">
+        <nav class="nav-links">
+          <a href="index.html" data-i18n="nav_fire">FIRE 计算器</a>
+          <a href="portfolio.html" data-i18n="nav_portfolio">投资组合</a>
+          <a href="alerts.html" data-i18n="nav_alerts">价格提醒</a>
+          <a href="library.html" data-i18n="nav_library">知识库</a>
+          <a href="blog.html" class="active" data-i18n="nav_blog">博客</a>
+        </nav>
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="zh">中</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
     <section class="hero">
       <span class="eyebrow">Notes</span>
-      <h1>投资 & 工具笔记</h1>
-      <p class="lede">记录自己用过的投资软件、踩过的坑、还在打磨的想法。不是建议，是日志。</p>
+      <h1 data-i18n="blog_h1">投资 & 工具笔记</h1>
+      <p class="lede" data-i18n="blog_lede">记录自己用过的投资软件、踩过的坑、还在打磨的想法。不是建议,是日志。</p>
     </section>
 
     <div class="admin-bar" id="adminBar">
@@ -415,7 +436,7 @@
 
     <footer>
       <div>Invest Tracker · personal notes</div>
-      <div>纯个人记录，不构成任何投资建议。</div>
+      <div data-i18n="blog_footer">纯个人记录,不构成任何投资建议。</div>
     </footer>
 
   </div>
@@ -515,6 +536,7 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="i18n.js"></script>
   <script src="posts.js"></script>
   <script>
     'use strict';

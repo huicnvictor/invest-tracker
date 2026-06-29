@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FIRE Calculator — Invest Tracker</title>
+  <title>FIRE 计算器 — Invest Tracker</title>
   <link rel="icon" type="image/x-icon" href="icon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +33,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
       font-size: 15px;
       line-height: 1.55;
       min-height: 100vh;
@@ -51,7 +51,22 @@
       padding-bottom: 1.2rem;
       border-bottom: 1px solid var(--border);
       margin-bottom: 3rem;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
+    .nav-wrap { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .lang-switch {
+      display: inline-flex; background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: 999px; padding: 2px;
+    }
+    .lang-btn {
+      background: transparent; border: none; color: var(--text-3);
+      font-family: inherit; font-size: 0.72rem; font-weight: 600;
+      padding: 0.3rem 0.65rem; border-radius: 999px; cursor: pointer;
+      transition: all 0.15s; width: auto; letter-spacing: 0.04em;
+    }
+    .lang-btn:hover { color: var(--text); }
+    .lang-btn.active { background: var(--accent); color: #fff; }
     .logo {
       font-weight: 700;
       font-size: 0.95rem;
@@ -345,50 +360,57 @@
         <span class="logo-dot"></span>
         Invest Tracker
       </div>
-      <nav class="nav-links">
-        <a href="index.html" class="active">FIRE</a>
-        <a href="alerts.html">Alerts</a>
-        <a href="library.html">Library</a>
-        <a href="blog.html">Blog</a>
-      </nav>
+      <div class="nav-wrap">
+        <nav class="nav-links">
+          <a href="index.html" class="active" data-i18n="nav_fire">FIRE 计算器</a>
+          <a href="portfolio.html" data-i18n="nav_portfolio">投资组合</a>
+          <a href="alerts.html" data-i18n="nav_alerts">价格提醒</a>
+          <a href="library.html" data-i18n="nav_library">知识库</a>
+          <a href="blog.html" data-i18n="nav_blog">博客</a>
+        </nav>
+        <div class="lang-switch">
+          <button class="lang-btn" data-lang="zh">中</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+      </div>
     </header>
 
     <section class="hero">
-      <span class="eyebrow">Calculator</span>
-      <h1>How much to invest every year</h1>
-      <p>Set your age, target, and ETF. Get the annual contribution needed to reach financial independence.</p>
+      <span class="eyebrow" data-i18n="fire_eyebrow">计算器</span>
+      <h1 data-i18n="fire_h1">每年要投多少钱</h1>
+      <p data-i18n="fire_lede">设好年龄、目标金额和 ETF，算出每年要存多少才能实现财务独立。</p>
     </section>
 
     <div class="grid">
 
       <div class="card">
-        <div class="card-title">Your plan</div>
+        <div class="card-title" data-i18n="fire_plan_title">你的计划</div>
 
         <div class="field-row">
           <div class="field">
-            <label for="currentAge">Current age</label>
+            <label for="currentAge" data-i18n="fire_currentAge">当前年龄</label>
             <input type="number" id="currentAge" value="30" min="10" max="100" />
           </div>
           <div class="field">
-            <label for="targetAge">Target age</label>
+            <label for="targetAge" data-i18n="fire_targetAge">目标年龄</label>
             <input type="number" id="targetAge" value="55" min="11" max="100" />
           </div>
         </div>
 
         <div class="field">
-          <label for="targetAmount">Target amount ($)</label>
+          <label for="targetAmount" data-i18n="fire_targetAmount">目标金额 ($)</label>
           <input type="number" id="targetAmount" value="1500000" min="0" step="10000" />
-          <div class="helper">Portfolio size you want when you stop working.</div>
+          <div class="helper" data-i18n="fire_targetHelper">停止工作时希望持有的资产规模。</div>
         </div>
 
         <div class="field">
-          <label for="principal">Already invested ($)</label>
+          <label for="principal" data-i18n="fire_principal">已投本金 ($)</label>
           <input type="number" id="principal" value="20000" min="0" step="1000" />
-          <div class="helper">Current portfolio that will keep compounding.</div>
+          <div class="helper" data-i18n="fire_principalHelper">当前账户余额,会继续复利。</div>
         </div>
 
         <div class="field">
-          <label for="etf">ETF / asset</label>
+          <label for="etf" data-i18n="fire_etf">ETF / 资产</label>
           <select id="etf">
             <option value="10">VOO — S&P 500 (~10%/yr historical)</option>
             <option value="13">QQQ — Nasdaq 100 (~13%/yr historical)</option>
@@ -402,47 +424,47 @@
         </div>
 
         <div class="field" id="customRateField" style="display:none;">
-          <label for="customRate">Annual return (%)</label>
+          <label for="customRate" data-i18n="fire_customRate">年化回报率 (%)</label>
           <input type="number" id="customRate" value="7" min="0" max="50" step="0.1" />
         </div>
 
         <div class="field">
-          <label for="inflation">Inflation adjustment (%)</label>
+          <label for="inflation" data-i18n="fire_inflation">通胀调整 (%)</label>
           <input type="number" id="inflation" value="0" min="0" max="20" step="0.1" />
-          <div class="helper">Set to 0 for nominal numbers. Use ~2-3% for real-dollar planning.</div>
+          <div class="helper" data-i18n="fire_inflationHelper">设为 0 用名义数字; 用 2-3% 算实际购买力。</div>
         </div>
 
-        <button id="calcBtn">Calculate</button>
+        <button id="calcBtn" data-i18n="fire_calc">计算</button>
       </div>
 
       <div class="card">
-        <div class="card-title">Result</div>
-        <div id="resultEmpty" class="result-empty">Fill in your plan and click Calculate.</div>
+        <div class="card-title" data-i18n="fire_result_title">结果</div>
+        <div id="resultEmpty" class="result-empty" data-i18n="fire_empty">填好计划后点击「计算」。</div>
         <div id="resultBlock" class="result-block">
           <div id="warningSlot"></div>
           <div class="headline">
-            <div class="headline-label">Invest per year</div>
+            <div class="headline-label" data-i18n="fire_annual_label">每年投入</div>
             <div class="headline-value" id="annual">$0</div>
-            <div class="headline-sub" id="monthly">≈ $0 / month</div>
+            <div class="headline-sub" id="monthly">≈ $0 / 月</div>
           </div>
 
           <div class="stat-row">
             <div class="stat">
-              <div class="stat-label">Years to goal</div>
+              <div class="stat-label" data-i18n="fire_years_label">达成年限</div>
               <div class="stat-value" id="years">0</div>
             </div>
             <div class="stat">
-              <div class="stat-label">Effective return</div>
+              <div class="stat-label" data-i18n="fire_effRate_label">有效回报率</div>
               <div class="stat-value" id="effRate">0%</div>
             </div>
           </div>
           <div class="stat-row">
             <div class="stat">
-              <div class="stat-label">Total contributed</div>
+              <div class="stat-label" data-i18n="fire_totalIn_label">总投入</div>
               <div class="stat-value" id="totalIn">$0</div>
             </div>
             <div class="stat">
-              <div class="stat-label">Growth earned</div>
+              <div class="stat-label" data-i18n="fire_growth_label">总收益</div>
               <div class="stat-value" id="growth">$0</div>
             </div>
           </div>
@@ -452,16 +474,16 @@
     </div>
 
     <section class="breakdown" id="breakdown">
-      <div class="breakdown-title">Year-by-year breakdown</div>
+      <div class="breakdown-title" data-i18n="fire_breakdown">逐年明细</div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Year</th>
-              <th>Age</th>
-              <th>Contributed</th>
-              <th>Growth</th>
-              <th>Total</th>
+              <th data-i18n="fire_th_year">年份</th>
+              <th data-i18n="fire_th_age">年龄</th>
+              <th data-i18n="fire_th_contributed">投入</th>
+              <th data-i18n="fire_th_growth">收益</th>
+              <th data-i18n="fire_th_total">总额</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -470,12 +492,13 @@
     </section>
 
     <footer>
-      <div>Invest Tracker · personal tool</div>
-      <div>Returns are historical averages, not guarantees.</div>
+      <div data-i18n="fire_footer_l">Invest Tracker · 个人工具</div>
+      <div data-i18n="fire_footer_r">回报为历史平均值,不构成任何保证。</div>
     </footer>
 
   </div>
 
+  <script src="i18n.js"></script>
   <script>
     const $ = id => document.getElementById(id);
 
@@ -498,7 +521,7 @@
       warn.innerHTML = '';
 
       if (ageGoal <= ageNow) {
-        warn.innerHTML = '<div class="warning">Target age must be greater than current age.</div>';
+        warn.innerHTML = '<div class="warning">' + t('fire_warn_age') + '</div>';
         $('resultEmpty').style.display = 'none';
         $('resultBlock').classList.add('show');
         $('breakdown').classList.remove('show');
@@ -527,13 +550,13 @@
       $('resultBlock').classList.add('show');
 
       if (alreadyThere) {
-        warn.innerHTML = '<div class="success">You’re already on track. Existing principal alone reaches the goal.</div>';
+        warn.innerHTML = '<div class="success">' + t('fire_warn_ontrack') + '</div>';
       }
 
       $('annual').textContent = fmt(annual);
-      $('monthly').textContent = '≈ ' + fmt(annual / 12) + ' / month';
-      $('years').textContent = n + (n === 1 ? ' yr' : ' yrs');
-      $('effRate').textContent = (r * 100).toFixed(2) + '%' + (infl > 0 ? ' real' : '');
+      $('monthly').textContent = '≈ ' + fmt(annual / 12) + t('fire_per_month');
+      $('years').textContent = n + (n === 1 ? t('fire_yr') : t('fire_yrs'));
+      $('effRate').textContent = (r * 100).toFixed(2) + '%' + (infl > 0 ? t('fire_real_suffix') : '');
       $('totalIn').textContent = fmt(principal + annual * n);
 
       const tbody = $('tableBody');
@@ -562,6 +585,7 @@
     document.querySelectorAll('input').forEach(el => {
       el.addEventListener('keydown', e => { if (e.key === 'Enter') calc(); });
     });
+    document.addEventListener('i18n:change', calc);
     calc();
   </script>
 </body>
