@@ -904,12 +904,19 @@
         const aSold = !!(a.sellDate && a.sellPrice != null);
         const bSold = !!(b.sellDate && b.sellPrice != null);
         if (aSold !== bSold) return aSold ? 1 : -1;
-        const aD = aSold ? a.sellDate : a.buyDate;
-        const bD = bSold ? b.sellDate : b.buyDate;
-        return bD.localeCompare(aD);
+        // DCA trades have no buyDate — fall back to createdAt so sort doesn't crash.
+        const aD = (aSold ? a.sellDate : a.buyDate) || a.createdAt || '';
+        const bD = (bSold ? b.sellDate : b.buyDate) || b.createdAt || '';
+        return String(bD).localeCompare(String(aD));
       });
 
-      wrap.innerHTML = filtered.map(tr => entryHTML(tr)).join('');
+      wrap.innerHTML = filtered.map(tr => {
+        try { return entryHTML(tr); }
+        catch (err) {
+          console.error('entryHTML failed for', tr, err);
+          return `<div class="entry-card"><div class="entry-head"><div><div class="entry-name">⚠️ ${escapeHTML(tr.symbol || 'unknown')}</div><div class="entry-meta">render error: ${escapeHTML(err.message)}</div></div></div></div>`;
+        }
+      }).join('');
 
       wrap.querySelectorAll('.entry-head').forEach(el => {
         el.addEventListener('click', e => {
