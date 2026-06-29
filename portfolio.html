@@ -407,6 +407,105 @@
       display: none;
     }
     .field-error.show { display: block; }
+    .helper { font-size: 0.78rem; color: var(--text-3); margin-top: 0.35rem; }
+
+    /* ── REASONS LIST ── */
+    .reason-row {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 0.8rem 0.9rem;
+      margin-bottom: 0.7rem;
+    }
+    .reason-row-head {
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;
+    }
+    .reason-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; font-weight: 600; color: var(--text-3);
+      background: var(--bg); border: 1px solid var(--border);
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .reason-text-input {
+      flex: 1; font-family: inherit; font-size: 0.92rem;
+      background: var(--bg); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 0.5rem 0.65rem; transition: border-color 0.15s;
+    }
+    .reason-text-input:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .reason-remove {
+      background: transparent; border: none; color: var(--text-3);
+      cursor: pointer; padding: 0.2rem 0.4rem; font-size: 1rem;
+      width: auto; transition: color 0.15s;
+    }
+    .reason-remove:hover { color: var(--danger); }
+    .links-list { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.4rem; padding-left: 1.8rem; }
+    .link-row { display: flex; gap: 0.4rem; align-items: center; }
+    .link-input {
+      flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      background: var(--bg); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 0.4rem 0.6rem;
+    }
+    .link-input:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .link-remove {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-3); cursor: pointer;
+      padding: 0.3rem 0.55rem; border-radius: var(--radius-sm);
+      font-size: 0.8rem; width: auto;
+    }
+    .link-remove:hover { color: var(--danger); border-color: rgba(239,68,68,0.3); }
+    .add-link-btn {
+      background: transparent; border: 1px dashed var(--border-strong);
+      color: var(--text-3); padding: 0.35rem 0.7rem;
+      font-size: 0.78rem; font-weight: 500;
+      border-radius: var(--radius-sm); cursor: pointer;
+      margin-left: 1.8rem; width: auto;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .add-link-btn:hover { color: var(--text-2); border-color: var(--border-strong); }
+
+    /* reason display in entry card */
+    .reasons-display { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.2rem; }
+    .reason-item {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 0.7rem 0.9rem;
+      display: flex; gap: 0.7rem; align-items: flex-start;
+    }
+    .reason-item-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; font-weight: 600; color: var(--text-3);
+      background: var(--bg); border: 1px solid var(--border);
+      min-width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .reason-item-body { flex: 1; }
+    .reason-item-text { color: var(--text-2); font-size: 0.9rem; line-height: 1.55; white-space: pre-wrap; }
+    .reason-item-links { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
+    .reason-item-link {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+      color: var(--accent); text-decoration: none;
+      padding: 0.2rem 0.55rem;
+      background: var(--accent-soft);
+      border-radius: 6px;
+      max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .reason-item-link:hover { text-decoration: underline; }
+
+    .dca-tag {
+      display: inline-block; font-size: 0.66rem; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--warning); background: var(--warning-soft);
+      border: 1px solid rgba(245,158,11,0.3);
+      padding: 0.15rem 0.5rem; border-radius: 4px;
+      margin-left: 0.4rem;
+    }
 
     /* ── FOOTER ── */
     footer {
@@ -526,30 +625,73 @@
           </div>
           <div class="field">
             <label for="f-broker" data-i18n="port_f_broker">券商 / App</label>
-            <input id="f-broker" data-i18n-placeholder="port_f_broker_ph" placeholder="Trade Republic, IBKR…">
+            <select id="f-broker">
+              <option value="" data-i18n="port_f_broker_select">— 选择 —</option>
+              <option value="Trade Republic">Trade Republic</option>
+              <option value="Interactive Brokers">Interactive Brokers (IBKR)</option>
+              <option value="Robinhood">Robinhood</option>
+              <option value="Fidelity">Fidelity</option>
+              <option value="Schwab">Charles Schwab</option>
+              <option value="Vanguard">Vanguard</option>
+              <option value="Webull">Webull</option>
+              <option value="eToro">eToro</option>
+              <option value="Tiger Brokers">Tiger Brokers / 老虎证券</option>
+              <option value="Futu">Futu / 富途</option>
+              <option value="Moomoo">Moomoo / 富途牛牛</option>
+              <option value="Snowball Securities">雪盈证券</option>
+              <option value="Huatai">华泰证券</option>
+              <option value="CITIC">中信证券</option>
+              <option value="Coinbase">Coinbase</option>
+              <option value="Binance">Binance</option>
+              <option value="Kraken">Kraken</option>
+              <option value="__other__" data-i18n="port_f_broker_other_label">自定义</option>
+            </select>
           </div>
           <div class="field">
             <label for="f-tax" data-i18n="port_f_tax">税率 (%)</label>
             <input id="f-tax" type="number" step="0.01" min="0" max="100" placeholder="0">
           </div>
         </div>
+        <div class="field" id="brokerOtherField" style="display:none;">
+          <label for="f-broker-other" data-i18n="port_f_broker_other_label">自定义券商</label>
+          <input id="f-broker-other" data-i18n-placeholder="port_f_broker_other_ph" placeholder="填券商名称">
+        </div>
 
         <div class="section-label" data-i18n="port_section_buy">买入</div>
-        <div class="field-row triple">
+        <div class="field">
+          <label for="f-type" data-i18n="port_f_type">买入方式</label>
+          <select id="f-type">
+            <option value="lump" data-i18n="port_f_type_lump">单次买入</option>
+            <option value="dca" data-i18n="port_f_type_dca">定投</option>
+          </select>
+        </div>
+        <div class="field-row triple" id="lumpFields">
           <div class="field">
             <label for="f-buyDate" data-i18n="port_f_buyDate">买入日期 *</label>
-            <input id="f-buyDate" type="date" required>
+            <input id="f-buyDate" type="date">
             <div class="field-error" id="err-buyDate" data-i18n="port_f_required">必填</div>
           </div>
           <div class="field">
             <label for="f-buyPrice" data-i18n="port_f_buyPrice">买入价 *</label>
-            <input id="f-buyPrice" type="number" step="any" min="0" required>
+            <input id="f-buyPrice" type="number" step="any" min="0">
             <div class="field-error" id="err-buyPrice" data-i18n="port_f_required">必填</div>
           </div>
           <div class="field">
             <label for="f-qty" data-i18n="port_f_qty">数量 *</label>
-            <input id="f-qty" type="number" step="any" min="0" required>
+            <input id="f-qty" type="number" step="any" min="0">
             <div class="field-error" id="err-qty" data-i18n="port_f_required">必填</div>
+          </div>
+        </div>
+        <div class="field-row" id="dcaFields" style="display:none;">
+          <div class="field">
+            <label for="f-qty-dca" data-i18n="port_f_qty_total">累计数量 *</label>
+            <input id="f-qty-dca" type="number" step="any" min="0">
+            <div class="field-error" id="err-qty-dca" data-i18n="port_f_required">必填</div>
+          </div>
+          <div class="field">
+            <label for="f-cost-dca" data-i18n="port_f_cost_total">累计成本（可选）</label>
+            <input id="f-cost-dca" type="number" step="any" min="0">
+            <div class="helper" data-i18n="port_f_cost_total_helper">填了才能算盈亏,不填只显示当前市值</div>
           </div>
         </div>
 
@@ -565,11 +707,11 @@
           </div>
         </div>
 
+        <div class="section-label" data-i18n="port_section_reasons">为什么买（1-4 条）</div>
+        <div id="reasonsList"></div>
+        <button type="button" class="btn ghost" id="addReasonBtn" style="width:auto;" data-i18n="port_btn_add_reason">+ 添加理由</button>
+
         <div class="section-label" data-i18n="port_section_notes">备注</div>
-        <div class="field">
-          <label for="f-reason" data-i18n="port_f_reason">为什么买？</label>
-          <textarea id="f-reason" data-i18n-placeholder="port_f_reason_ph" placeholder="投资逻辑、信号、目标价…"></textarea>
-        </div>
         <div class="checkbox-row">
           <input type="checkbox" id="f-track" checked>
           <label for="f-track" data-i18n="port_f_track">自动追踪此股票的价格历史（加入 tracked_tickers.json）</label>
@@ -625,23 +767,35 @@
 
     // ── calc ───────────────────────────────────────────────────
     function computePL(t) {
-      const cost = t.buyPrice * t.qty;
+      const isDca = t.type === 'dca';
+      // For lump: cost = buyPrice * qty. For dca: cost = totalCost (may be null).
+      const cost = isDca
+        ? (t.totalCost != null && t.totalCost !== '' ? +t.totalCost : null)
+        : t.buyPrice * t.qty;
+      const avgPrice = isDca
+        ? (cost != null && t.qty ? cost / t.qty : null)
+        : t.buyPrice;
       const sold = !!(t.sellDate && t.sellPrice != null && t.sellPrice !== '');
-      let proceeds = null, gross = null, taxAmt = 0, net = null, currentPrice = null, unrealizedGross = null, unrealizedNet = null;
+      let proceeds = null, gross = null, taxAmt = 0, net = null, currentPrice = null, unrealizedGross = null, unrealizedNet = null, mktValue = null;
 
       if (sold) {
         proceeds = t.sellPrice * t.qty;
-        gross = proceeds - cost;
-        taxAmt = gross > 0 ? gross * (t.taxRate || 0) / 100 : 0;
-        net = gross - taxAmt;
+        if (cost != null) {
+          gross = proceeds - cost;
+          taxAmt = gross > 0 ? gross * (t.taxRate || 0) / 100 : 0;
+          net = gross - taxAmt;
+        }
       } else if (prices && prices[t.symbol] && prices[t.symbol].length) {
         const last = prices[t.symbol][prices[t.symbol].length - 1];
         currentPrice = last.close;
-        unrealizedGross = (currentPrice - t.buyPrice) * t.qty;
-        const utax = unrealizedGross > 0 ? unrealizedGross * (t.taxRate || 0) / 100 : 0;
-        unrealizedNet = unrealizedGross - utax;
+        mktValue = currentPrice * t.qty;
+        if (cost != null) {
+          unrealizedGross = mktValue - cost;
+          const utax = unrealizedGross > 0 ? unrealizedGross * (t.taxRate || 0) / 100 : 0;
+          unrealizedNet = unrealizedGross - utax;
+        }
       }
-      return { cost, sold, proceeds, gross, taxAmt, net, currentPrice, unrealizedGross, unrealizedNet };
+      return { cost, avgPrice, isDca, sold, proceeds, gross, taxAmt, net, currentPrice, mktValue, unrealizedGross, unrealizedNet };
     }
 
     function fmtMoney(n, cur) {
@@ -675,9 +829,9 @@
         const pl = computePL(t);
         if (!pl.sold) {
           open++;
-          grouped[c].invested += pl.cost;
+          if (pl.cost != null) grouped[c].invested += pl.cost;
           if (pl.unrealizedNet != null) grouped[c].unrealized += pl.unrealizedNet;
-        } else {
+        } else if (pl.net != null) {
           grouped[c].realized += pl.net;
         }
       }
@@ -764,6 +918,12 @@
       });
     }
 
+    function getReasons(tr) {
+      if (Array.isArray(tr.reasons) && tr.reasons.length) return tr.reasons;
+      if (tr.reason && typeof tr.reason === 'string') return [{ text: tr.reason, links: [] }];
+      return [];
+    }
+
     function entryHTML(tr) {
       const pl = computePL(tr);
       const cur = tr.currency || 'USD';
@@ -771,48 +931,82 @@
       const statusText = pl.sold ? t('port_status_sold') : t('port_status_holding');
 
       let plDisplay = '', plSub = '', plClass = '';
-      if (pl.sold) {
+      if (pl.sold && pl.net != null) {
         plDisplay = fmtPlusMoney(pl.net, cur);
         plSub = t('port_pl_realized') + fmtPct(pl.net, pl.cost);
         plClass = pl.net > 0 ? 'up' : pl.net < 0 ? 'down' : '';
-      } else if (pl.unrealizedNet != null) {
+      } else if (!pl.sold && pl.unrealizedNet != null) {
         plDisplay = fmtPlusMoney(pl.unrealizedNet, cur);
         plSub = t('port_pl_unrealized', { price: fmtMoney(pl.currentPrice, cur) });
         plClass = pl.unrealizedNet > 0 ? 'up' : pl.unrealizedNet < 0 ? 'down' : '';
-      } else {
+      } else if (!pl.sold && pl.mktValue != null) {
+        plDisplay = fmtMoney(pl.mktValue, cur);
+        plSub = t('port_detail_mktValue');
+        plClass = '';
+      } else if (pl.cost != null) {
         plDisplay = fmtMoney(pl.cost, cur);
         plSub = t('port_pl_cost');
+      } else {
+        plDisplay = fmtQty(tr.qty);
+        plSub = t('port_detail_qty');
       }
 
       const meta = [];
-      meta.push(t('port_meta_bought', { date: tr.buyDate }));
-      if (pl.sold) meta.push(t('port_meta_sold', { date: tr.sellDate }));
-      if (tr.broker) meta.push(tr.broker);
-      meta.push(t('port_meta_units', { qty: fmtQty(tr.qty) }));
+      if (pl.isDca) {
+        meta.push('<span class="dca-tag">' + t('port_dca_tag') + '</span>');
+      } else if (tr.buyDate) {
+        meta.push(escapeHTML(t('port_meta_bought', { date: tr.buyDate })));
+      }
+      if (pl.sold) meta.push(escapeHTML(t('port_meta_sold', { date: tr.sellDate })));
+      if (tr.broker) meta.push(escapeHTML(tr.broker));
+      meta.push(escapeHTML(t('port_meta_units', { qty: fmtQty(tr.qty) })));
 
-      const detailRows = [
-        [t('port_detail_buyPrice'), fmtMoney(tr.buyPrice, cur)],
-        [t('port_detail_qty'), fmtQty(tr.qty)],
-        [t('port_detail_cost'), fmtMoney(pl.cost, cur)],
-        [t('port_detail_tax'), (tr.taxRate || 0) + '%'],
-      ];
+      const detailRows = [];
+      if (pl.isDca) {
+        detailRows.push([t('port_detail_type'), t('port_f_type_dca')]);
+        detailRows.push([t('port_detail_qty'), fmtQty(tr.qty)]);
+        if (pl.cost != null) {
+          detailRows.push([t('port_detail_total_cost'), fmtMoney(pl.cost, cur)]);
+          detailRows.push([t('port_detail_avg_price'), fmtMoney(pl.avgPrice, cur)]);
+        }
+      } else {
+        detailRows.push([t('port_detail_buyPrice'), fmtMoney(tr.buyPrice, cur)]);
+        detailRows.push([t('port_detail_qty'), fmtQty(tr.qty)]);
+        detailRows.push([t('port_detail_cost'), fmtMoney(pl.cost, cur)]);
+      }
+      detailRows.push([t('port_detail_tax'), (tr.taxRate || 0) + '%']);
       if (pl.sold) {
         detailRows.push([t('port_detail_sellPrice'), fmtMoney(tr.sellPrice, cur)]);
         detailRows.push([t('port_detail_proceeds'), fmtMoney(pl.proceeds, cur)]);
-        detailRows.push([t('port_detail_gross'), fmtPlusMoney(pl.gross, cur)]);
-        detailRows.push([t('port_detail_taxPaid'), fmtMoney(pl.taxAmt, cur)]);
+        if (pl.gross != null) detailRows.push([t('port_detail_gross'), fmtPlusMoney(pl.gross, cur)]);
+        if (pl.taxAmt) detailRows.push([t('port_detail_taxPaid'), fmtMoney(pl.taxAmt, cur)]);
       } else if (pl.currentPrice != null) {
         detailRows.push([t('port_detail_latest'), fmtMoney(pl.currentPrice, cur)]);
-        detailRows.push([t('port_detail_mktValue'), fmtMoney(pl.currentPrice * tr.qty, cur)]);
-        detailRows.push([t('port_detail_unrealized'), fmtPlusMoney(pl.unrealizedGross, cur)]);
+        detailRows.push([t('port_detail_mktValue'), fmtMoney(pl.mktValue, cur)]);
+        if (pl.unrealizedGross != null) detailRows.push([t('port_detail_unrealized'), fmtPlusMoney(pl.unrealizedGross, cur)]);
       }
       detailRows.push([t('port_detail_broker'), tr.broker || '—']);
 
       const detailHTML = detailRows.map(([l, v]) => `
         <div class="detail-item">
-          <div class="detail-label">${l}</div>
+          <div class="detail-label">${escapeHTML(l)}</div>
           <div class="detail-value">${v}</div>
         </div>`).join('');
+
+      const reasons = getReasons(tr);
+      const reasonsHTML = reasons.length
+        ? `<div class="reasons-display">${reasons.map((r, i) => `
+            <div class="reason-item">
+              <div class="reason-item-num">${i + 1}</div>
+              <div class="reason-item-body">
+                <div class="reason-item-text">${escapeHTML(r.text || '')}</div>
+                ${(r.links && r.links.length) ? `<div class="reason-item-links">${r.links.map(l => {
+                  const safe = escapeHTML(l);
+                  return `<a class="reason-item-link" href="${safe}" target="_blank" rel="noopener">${safe}</a>`;
+                }).join('')}</div>` : ''}
+              </div>
+            </div>`).join('')}</div>`
+        : `<div class="reason-block empty">${t('port_reason_empty')}</div>`;
 
       const sellBtn = pl.sold ? '' : `<button class="btn ghost" data-action="sell" data-id="${tr.id}">${t('port_action_sell')}</button>`;
 
@@ -824,17 +1018,17 @@
                 <div class="entry-name">${escapeHTML(tr.name || tr.symbol)}</div>
                 <div class="entry-sym">${escapeHTML(tr.symbol)} · ${cur}</div>
               </div>
-              <div class="entry-meta">${meta.map(escapeHTML).join(' · ')}</div>
+              <div class="entry-meta">${meta.join(' · ')}</div>
             </div>
             <div>
               <div class="entry-pl ${plClass}">${plDisplay}</div>
-              <div class="entry-pl-sub">${plSub}</div>
+              <div class="entry-pl-sub">${escapeHTML(plSub)}</div>
             </div>
             <div class="status-badge ${statusClass}">${statusText}</div>
           </div>
           <div class="entry-body">
             <div class="detail-grid">${detailHTML}</div>
-            <div class="reason-block ${tr.reason ? '' : 'empty'}">${tr.reason ? escapeHTML(tr.reason) : t('port_reason_empty')}</div>
+            ${reasonsHTML}
             <div class="chart-wrap">
               <div class="chart-head">
                 <div class="chart-title">${t('port_chart_title')}</div>
@@ -878,7 +1072,8 @@
       const labels = series.map(p => p.date);
       const data = series.map(p => p.close);
       const findIdx = d => labels.findIndex(l => l >= d);
-      const buyIdx = findIdx(tr.buyDate);
+      const isDca = tr.type === 'dca';
+      const buyIdx = (!isDca && tr.buyDate) ? findIdx(tr.buyDate) : -1;
       const sellIdx = tr.sellDate ? findIdx(tr.sellDate) : -1;
 
       const pointData = labels.map(() => null);
@@ -929,7 +1124,94 @@
       statusEl.textContent = t('port_chart_points', { n: labels.length, start: labels[0], end: labels[labels.length - 1] });
     }
 
-    // ── modal ────────────────────────────────────────────────
+    // ── modal: reasons list ──────────────────────────────────
+    let reasonsState = [];
+    const MAX_REASONS = 4;
+    const MAX_LINKS = 5;
+
+    function renderReasonsList() {
+      const wrap = $('reasonsList');
+      wrap.innerHTML = reasonsState.map((r, i) => `
+        <div class="reason-row" data-idx="${i}">
+          <div class="reason-row-head">
+            <div class="reason-num">${i + 1}</div>
+            <input class="reason-text-input" data-field="text" value="${escapeHTML(r.text || '')}" placeholder="${escapeHTML(t('port_reason_text_ph'))}">
+            <button type="button" class="reason-remove" data-action="remove-reason" title="${escapeHTML(t('port_btn_remove'))}">✕</button>
+          </div>
+          <div class="links-list">
+            ${(r.links || []).map((l, j) => `
+              <div class="link-row" data-link-idx="${j}">
+                <input class="link-input" data-field="link" value="${escapeHTML(l)}" placeholder="https://...">
+                <button type="button" class="link-remove" data-action="remove-link" data-link-idx="${j}">✕</button>
+              </div>`).join('')}
+          </div>
+          ${(r.links || []).length < MAX_LINKS ? `<button type="button" class="add-link-btn" data-action="add-link">${t('port_btn_add_link')}</button>` : ''}
+        </div>`).join('');
+
+      wrap.querySelectorAll('.reason-row').forEach(row => {
+        const idx = +row.dataset.idx;
+        row.querySelector('[data-field=text]').addEventListener('input', e => {
+          reasonsState[idx].text = e.target.value;
+        });
+        row.querySelectorAll('[data-field=link]').forEach((el, j) => {
+          el.addEventListener('input', e => { reasonsState[idx].links[j] = e.target.value; });
+        });
+        const removeBtn = row.querySelector('[data-action=remove-reason]');
+        if (removeBtn) removeBtn.addEventListener('click', () => {
+          reasonsState.splice(idx, 1);
+          renderReasonsList();
+          updateAddReasonBtn();
+        });
+        row.querySelectorAll('[data-action=remove-link]').forEach((b, j) => {
+          b.addEventListener('click', () => {
+            reasonsState[idx].links.splice(j, 1);
+            renderReasonsList();
+          });
+        });
+        const addLink = row.querySelector('[data-action=add-link]');
+        if (addLink) addLink.addEventListener('click', () => {
+          if (!reasonsState[idx].links) reasonsState[idx].links = [];
+          if (reasonsState[idx].links.length < MAX_LINKS) {
+            reasonsState[idx].links.push('');
+            renderReasonsList();
+          }
+        });
+      });
+    }
+
+    function updateAddReasonBtn() {
+      $('addReasonBtn').style.display = reasonsState.length >= MAX_REASONS ? 'none' : 'inline-block';
+    }
+
+    function setupBroker(brokerValue) {
+      const sel = $('f-broker');
+      const otherField = $('brokerOtherField');
+      const otherInput = $('f-broker-other');
+      const knownValues = [...sel.options].map(o => o.value).filter(v => v && v !== '__other__');
+
+      if (!brokerValue) {
+        sel.value = '';
+        otherField.style.display = 'none';
+        otherInput.value = '';
+      } else if (knownValues.includes(brokerValue)) {
+        sel.value = brokerValue;
+        otherField.style.display = 'none';
+        otherInput.value = '';
+      } else {
+        sel.value = '__other__';
+        otherField.style.display = '';
+        otherInput.value = brokerValue;
+      }
+    }
+
+    function setupType(typeValue) {
+      const isDca = typeValue === 'dca';
+      $('f-type').value = isDca ? 'dca' : 'lump';
+      $('lumpFields').style.display = isDca ? 'none' : '';
+      $('dcaFields').style.display = isDca ? '' : 'none';
+    }
+
+    // ── modal: open / close ──────────────────────────────────
     function openModal(id, focusSell) {
       editingId = id || null;
       const tr = id ? trades.find(x => x.id === id) : null;
@@ -938,17 +1220,36 @@
       $('f-symbol').value = tr ? tr.symbol : '';
       $('f-name').value = tr ? (tr.name || '') : '';
       $('f-currency').value = tr ? (tr.currency || 'USD') : 'USD';
-      $('f-broker').value = tr ? (tr.broker || '') : '';
+      setupBroker(tr ? (tr.broker || '') : '');
       $('f-tax').value = tr ? (tr.taxRate ?? '') : '';
-      $('f-buyDate').value = tr ? tr.buyDate : new Date().toISOString().slice(0, 10);
-      $('f-buyPrice').value = tr ? tr.buyPrice : '';
-      $('f-qty').value = tr ? tr.qty : '';
+
+      setupType(tr ? tr.type : 'lump');
+      $('f-buyDate').value = tr && tr.buyDate ? tr.buyDate : new Date().toISOString().slice(0, 10);
+      $('f-buyPrice').value = tr && tr.buyPrice != null ? tr.buyPrice : '';
+      $('f-qty').value = tr && tr.type !== 'dca' && tr.qty != null ? tr.qty : '';
+      $('f-qty-dca').value = tr && tr.type === 'dca' && tr.qty != null ? tr.qty : '';
+      $('f-cost-dca').value = tr && tr.type === 'dca' && tr.totalCost != null ? tr.totalCost : '';
+
       $('f-sellDate').value = tr ? (tr.sellDate || '') : '';
       $('f-sellPrice').value = tr ? (tr.sellPrice ?? '') : '';
-      $('f-reason').value = tr ? (tr.reason || '') : '';
       $('f-track').checked = tr ? (tr.track !== false) : true;
 
-      ['symbol','buyDate','buyPrice','qty'].forEach(k => $('err-' + k).classList.remove('show'));
+      // reasons: support old single-string reason
+      if (tr) {
+        const existing = getReasons(tr);
+        reasonsState = existing.length
+          ? existing.map(r => ({ text: r.text || '', links: Array.isArray(r.links) ? [...r.links] : [] }))
+          : [{ text: '', links: [] }];
+      } else {
+        reasonsState = [{ text: '', links: [] }];
+      }
+      renderReasonsList();
+      updateAddReasonBtn();
+
+      ['symbol','buyDate','buyPrice','qty','qty-dca'].forEach(k => {
+        const e = $('err-' + k);
+        if (e) e.classList.remove('show');
+      });
       $('modalBg').classList.add('open');
       setTimeout(() => (focusSell ? $('f-sellDate') : $('f-symbol')).focus(), 50);
     }
@@ -960,39 +1261,76 @@
     function submitForm(e) {
       e.preventDefault();
       const symbol = $('f-symbol').value.trim().toUpperCase();
-      const buyDate = $('f-buyDate').value;
-      const buyPrice = parseFloat($('f-buyPrice').value);
-      const qty = parseFloat($('f-qty').value);
+      const type = $('f-type').value === 'dca' ? 'dca' : 'lump';
+      const isDca = type === 'dca';
 
       let ok = true;
-      const setErr = (k, bad) => { $('err-' + k).classList.toggle('show', bad); if (bad) ok = false; };
+      const setErr = (k, bad) => {
+        const el = $('err-' + k);
+        if (!el) return;
+        el.classList.toggle('show', bad);
+        if (bad) ok = false;
+      };
+      // clear all first
+      ['symbol','buyDate','buyPrice','qty','qty-dca'].forEach(k => setErr(k, false));
+
       setErr('symbol', !symbol);
-      setErr('buyDate', !buyDate);
-      setErr('buyPrice', !(buyPrice >= 0));
-      setErr('qty', !(qty > 0));
+
+      let buyDate = null, buyPrice = null, qty = null, totalCost = null;
+      if (isDca) {
+        qty = parseFloat($('f-qty-dca').value);
+        setErr('qty-dca', !(qty > 0));
+        const costRaw = $('f-cost-dca').value;
+        totalCost = costRaw === '' ? null : parseFloat(costRaw);
+      } else {
+        buyDate = $('f-buyDate').value;
+        buyPrice = parseFloat($('f-buyPrice').value);
+        qty = parseFloat($('f-qty').value);
+        setErr('buyDate', !buyDate);
+        setErr('buyPrice', !(buyPrice >= 0));
+        setErr('qty', !(qty > 0));
+      }
       if (!ok) return;
 
       const sellDateRaw = $('f-sellDate').value;
       const sellPriceRaw = $('f-sellPrice').value;
 
+      // broker: resolve __other__ to the custom input
+      let broker = $('f-broker').value;
+      if (broker === '__other__') broker = $('f-broker-other').value.trim();
+      else if (broker === '') broker = '';
+
+      // reasons: keep only non-empty entries; trim links
+      const reasons = reasonsState
+        .map(r => ({
+          text: (r.text || '').trim(),
+          links: (r.links || []).map(l => (l || '').trim()).filter(Boolean),
+        }))
+        .filter(r => r.text || r.links.length);
+
       const data = {
         symbol,
         name: $('f-name').value.trim(),
         currency: $('f-currency').value,
-        broker: $('f-broker').value.trim(),
+        broker,
         taxRate: parseFloat($('f-tax').value) || 0,
+        type,
         buyDate,
         buyPrice,
         qty,
+        totalCost,
         sellDate: sellDateRaw || null,
         sellPrice: sellPriceRaw === '' ? null : parseFloat(sellPriceRaw),
-        reason: $('f-reason').value.trim(),
+        reasons,
         track: $('f-track').checked,
       };
 
       if (editingId) {
         const idx = trades.findIndex(x => x.id === editingId);
-        trades[idx] = { ...trades[idx], ...data, updatedAt: new Date().toISOString() };
+        // strip legacy single-reason field when saving
+        const prev = { ...trades[idx] };
+        delete prev.reason;
+        trades[idx] = { ...prev, ...data, updatedAt: new Date().toISOString() };
       } else {
         trades.push({
           id: crypto.randomUUID(),
@@ -1120,6 +1458,19 @@
         renderList();
       });
     });
+    $('f-broker').addEventListener('change', e => {
+      const isOther = e.target.value === '__other__';
+      $('brokerOtherField').style.display = isOther ? '' : 'none';
+      if (!isOther) $('f-broker-other').value = '';
+    });
+    $('f-type').addEventListener('change', e => setupType(e.target.value));
+    $('addReasonBtn').addEventListener('click', () => {
+      if (reasonsState.length >= MAX_REASONS) return;
+      reasonsState.push({ text: '', links: [] });
+      renderReasonsList();
+      updateAddReasonBtn();
+    });
+
     $('addBtn').addEventListener('click', () => openModal());
     $('syncBtn').addEventListener('click', () => {
       const panel = $('syncPanel');
