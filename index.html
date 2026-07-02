@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FIRE 计算器 — Invest Tracker</title>
+  <title>财务自由计算器 — Invest Tracker</title>
   <link rel="icon" type="image/x-icon" href="icon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -120,7 +120,7 @@
       margin-bottom: 0.7rem;
     }
     .hero p {
-      max-width: 640px;
+      max-width: 680px;
       color: var(--text-2);
       font-size: 1rem;
     }
@@ -178,19 +178,12 @@
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--accent-soft);
     }
-    select {
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23A1A1AA'%3e%3cpath d='M4 6l4 4 4-4'/%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right 0.7rem center;
-      background-size: 16px;
-      padding-right: 2.2rem;
-    }
     .helper {
       font-size: 0.78rem;
       color: var(--text-3);
       margin-top: 0.35rem;
     }
+    .row-helper { margin-top: -0.6rem; margin-bottom: 1.1rem; }
 
     button {
       width: 100%;
@@ -294,6 +287,50 @@
       margin-bottom: 1rem;
     }
 
+    /* ── FORMULA ── */
+    .formula {
+      margin-top: 2.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.6rem;
+      display: none;
+    }
+    .formula.show { display: block; }
+    .formula-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 1rem;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .formula-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.9rem;
+    }
+    .formula-row:last-child { border-bottom: none; }
+    .formula-label { color: var(--text-2); }
+    .formula-expr {
+      color: var(--text-3);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      margin-left: 0.5rem;
+    }
+    .formula-value {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
     /* ── TABLE ── */
     .breakdown {
       margin-top: 2.5rem;
@@ -362,7 +399,7 @@
       </div>
       <div class="nav-wrap">
         <nav class="nav-links">
-          <a href="index.html" class="active" data-i18n="nav_fire">FIRE 计算器</a>
+          <a href="index.html" class="active" data-i18n="nav_fire">财务自由</a>
           <a href="portfolio.html" data-i18n="nav_portfolio">投资组合</a>
           <a href="alerts.html" data-i18n="nav_alerts">价格提醒</a>
           <a href="library.html" data-i18n="nav_library">知识库</a>
@@ -377,8 +414,8 @@
 
     <section class="hero">
       <span class="eyebrow" data-i18n="fire_eyebrow">计算器</span>
-      <h1 data-i18n="fire_h1">每年要投多少钱</h1>
-      <p data-i18n="fire_lede">设好年龄、目标金额和 ETF，算出每年要存多少才能实现财务独立。</p>
+      <h1 data-i18n="fire_h1">财务自由计算器</h1>
+      <p data-i18n="fire_lede">按第一定律和第二定律估算：退休时要多少金融资产覆盖开支，现有资产未来能长到多少，缺口多少，每年再存多少能填上。</p>
     </section>
 
     <div class="grid">
@@ -389,49 +426,60 @@
         <div class="field-row">
           <div class="field">
             <label for="currentAge" data-i18n="fire_currentAge">当前年龄</label>
-            <input type="number" id="currentAge" value="30" min="10" max="100" />
+            <input type="number" id="currentAge" value="40" min="10" max="100" />
           </div>
           <div class="field">
-            <label for="targetAge" data-i18n="fire_targetAge">目标年龄</label>
-            <input type="number" id="targetAge" value="55" min="11" max="100" />
+            <label for="retireAge" data-i18n="fire_retireAge">退休年龄</label>
+            <input type="number" id="retireAge" value="65" min="11" max="100" />
           </div>
         </div>
 
-        <div class="field">
-          <label for="targetAmount" data-i18n="fire_targetAmount">目标金额 ($)</label>
-          <input type="number" id="targetAmount" value="1500000" min="0" step="10000" />
-          <div class="helper" data-i18n="fire_targetHelper">停止工作时希望持有的资产规模。</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="currentAsset" data-i18n="fire_currentAsset">当前金融资产（万）</label>
+            <input type="number" id="currentAsset" value="10" min="0" step="1" />
+          </div>
+          <div class="field">
+            <label for="returnRate" data-i18n="fire_returnRate">年化投资回报 (%)</label>
+            <input type="number" id="returnRate" value="10" min="0" max="50" step="0.1" />
+          </div>
         </div>
+        <div class="helper row-helper" data-i18n="fire_returnHelper">沪深 300 长期约 8%，S&P 500 约 10%，Nasdaq 100 约 13%。</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="inflation" data-i18n="fire_inflation">通胀率 (%)</label>
+            <input type="number" id="inflation" value="4" min="0" max="20" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="withdrawRate" data-i18n="fire_withdrawRate">提取率 (%)</label>
+            <input type="number" id="withdrawRate" value="4" min="0.5" max="20" step="0.1" />
+          </div>
+        </div>
+        <div class="helper row-helper" data-i18n="fire_inflationHelper">中国过去 20 年通胀约 4.8%，取 4% 保守估。提取率是 4% 定律。</div>
 
         <div class="field">
-          <label for="principal" data-i18n="fire_principal">已投本金 ($)</label>
-          <input type="number" id="principal" value="20000" min="0" step="1000" />
-          <div class="helper" data-i18n="fire_principalHelper">当前账户余额,会继续复利。</div>
+          <label for="expenseNow" data-i18n="fire_expenseNow">今年家庭开支（万）</label>
+          <input type="number" id="expenseNow" value="10" min="0" step="0.5" />
+          <div class="helper" data-i18n="fire_expenseHelper">全家今年的总花销，会按通胀因子放大。</div>
         </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="rentNow" data-i18n="fire_rentNow">今年房租收入（万）</label>
+            <input type="number" id="rentNow" value="3" min="0" step="0.5" />
+          </div>
+          <div class="field">
+            <label for="otherIncome" data-i18n="fire_otherIncome">退休后其他被动收入（万）</label>
+            <input type="number" id="otherIncome" value="4" min="0" step="0.5" />
+          </div>
+        </div>
+        <div class="helper row-helper" data-i18n="fire_incomeHelper">房租按通胀调整。其他被动收入（退休金/社保）按退休后名义值填。</div>
 
         <div class="field">
-          <label for="etf" data-i18n="fire_etf">ETF / 资产</label>
-          <select id="etf">
-            <option value="10">VOO — S&P 500 (~10%/yr historical)</option>
-            <option value="13">QQQ — Nasdaq 100 (~13%/yr historical)</option>
-            <option value="10" selected>VTI — Total US Market (~10%/yr)</option>
-            <option value="8">VT — Total World (~8%/yr)</option>
-            <option value="13">SXRV — iShares Nasdaq 100 UCITS (~13%/yr)</option>
-            <option value="11">SCHD — Dividend Growth (~11%/yr)</option>
-            <option value="4">BND — Bonds (~4%/yr)</option>
-            <option value="custom">Custom rate…</option>
-          </select>
-        </div>
-
-        <div class="field" id="customRateField" style="display:none;">
-          <label for="customRate" data-i18n="fire_customRate">年化回报率 (%)</label>
-          <input type="number" id="customRate" value="7" min="0" max="50" step="0.1" />
-        </div>
-
-        <div class="field">
-          <label for="inflation" data-i18n="fire_inflation">通胀调整 (%)</label>
-          <input type="number" id="inflation" value="0" min="0" max="20" step="0.1" />
-          <div class="helper" data-i18n="fire_inflationHelper">设为 0 用名义数字; 用 2-3% 算实际购买力。</div>
+          <label for="retireRatio" data-i18n="fire_retireRatio">退休后开支占比 (%)</label>
+          <input type="number" id="retireRatio" value="80" min="30" max="150" step="1" />
+          <div class="helper" data-i18n="fire_ratioHelper">退休后花销通常是退休前的 60-80%。</div>
         </div>
 
         <button id="calcBtn" data-i18n="fire_calc">计算</button>
@@ -439,33 +487,43 @@
 
       <div class="card">
         <div class="card-title" data-i18n="fire_result_title">结果</div>
-        <div id="resultEmpty" class="result-empty" data-i18n="fire_empty">填好计划后点击「计算」。</div>
+        <div id="resultEmpty" class="result-empty" data-i18n="fire_empty">填好后点「计算」。</div>
         <div id="resultBlock" class="result-block">
           <div id="warningSlot"></div>
           <div class="headline">
-            <div class="headline-label" data-i18n="fire_annual_label">每年投入</div>
-            <div class="headline-value" id="annual">$0</div>
-            <div class="headline-sub" id="monthly">≈ $0 / 月</div>
+            <div class="headline-label" data-i18n="fire_annual_label">每年需要投入 Y</div>
+            <div class="headline-value" id="annual">0 万</div>
+            <div class="headline-sub" id="monthly">≈ 0 万 / 月</div>
           </div>
 
           <div class="stat-row">
             <div class="stat">
-              <div class="stat-label" data-i18n="fire_years_label">达成年限</div>
-              <div class="stat-value" id="years">0</div>
+              <div class="stat-label" data-i18n="fire_years_label">达成年限 N</div>
+              <div class="stat-value" id="yearsN">0</div>
             </div>
             <div class="stat">
-              <div class="stat-label" data-i18n="fire_effRate_label">有效回报率</div>
-              <div class="stat-value" id="effRate">0%</div>
+              <div class="stat-label" data-i18n="fire_inf_label">通胀因子 INF</div>
+              <div class="stat-value" id="inf">0</div>
             </div>
           </div>
           <div class="stat-row">
             <div class="stat">
-              <div class="stat-label" data-i18n="fire_totalIn_label">总投入</div>
-              <div class="stat-value" id="totalIn">$0</div>
+              <div class="stat-label" data-i18n="fire_required_label">需要金融资产 F</div>
+              <div class="stat-value" id="required">0 万</div>
             </div>
             <div class="stat">
-              <div class="stat-label" data-i18n="fire_growth_label">总收益</div>
-              <div class="stat-value" id="growth">$0</div>
+              <div class="stat-label" data-i18n="fire_gap_label">资产缺口 D</div>
+              <div class="stat-value" id="gap">0 万</div>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div class="stat">
+              <div class="stat-label" data-i18n="fire_futureAsset_label">现有资产未来值</div>
+              <div class="stat-value" id="futureAsset">0 万</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label" data-i18n="fire_multiplier_label">累积倍数 P</div>
+              <div class="stat-value" id="multiplier">0</div>
             </div>
           </div>
         </div>
@@ -473,16 +531,76 @@
 
     </div>
 
+    <section class="formula" id="formula">
+      <div class="formula-title" data-i18n="fire_formula_title">计算过程</div>
+      <div class="formula-row">
+        <span class="formula-label" data-i18n="fire_f_inf">通胀因子 INF</span>
+        <span>
+          <span class="formula-expr" id="expInf"></span>
+          <span class="formula-value" id="valInf"></span>
+        </span>
+      </div>
+      <div class="formula-row">
+        <span class="formula-label" data-i18n="fire_f_expense">未来家庭开支</span>
+        <span>
+          <span class="formula-expr" id="expExpense"></span>
+          <span class="formula-value" id="valExpense"></span>
+        </span>
+      </div>
+      <div class="formula-row">
+        <span class="formula-label" data-i18n="fire_f_rent">未来房租收入</span>
+        <span>
+          <span class="formula-expr" id="expRent"></span>
+          <span class="formula-value" id="valRent"></span>
+        </span>
+      </div>
+      <div class="formula-row">
+        <span class="formula-label" data-i18n="fire_f_required">需要金融资产 F</span>
+        <span>
+          <span class="formula-expr" id="expRequired"></span>
+          <span class="formula-value" id="valRequired"></span>
+        </span>
+      </div>
+      <div class="formula-row">
+        <span class="formula-label" data-i18n="fire_f_future">现有资产未来值</span>
+        <span>
+          <span class="formula-expr" id="expFuture"></span>
+          <span class="formula-value" id="valFuture"></span>
+        </span>
+      </div>
+      <div class="formula-row">
+        <span class="formula-label" data-i18n="fire_f_gap">资产缺口 D</span>
+        <span>
+          <span class="formula-expr" id="expGap"></span>
+          <span class="formula-value" id="valGap"></span>
+        </span>
+      </div>
+      <div class="formula-row">
+        <span class="formula-label" data-i18n="fire_f_multi">累积投资倍数 P</span>
+        <span>
+          <span class="formula-expr" id="expMulti"></span>
+          <span class="formula-value" id="valMulti"></span>
+        </span>
+      </div>
+      <div class="formula-row">
+        <span class="formula-label" data-i18n="fire_f_annual">每年需投入 Y</span>
+        <span>
+          <span class="formula-expr" id="expAnnual"></span>
+          <span class="formula-value" id="valAnnual"></span>
+        </span>
+      </div>
+    </section>
+
     <section class="breakdown" id="breakdown">
-      <div class="breakdown-title" data-i18n="fire_breakdown">逐年明细</div>
+      <div class="breakdown-title" data-i18n="fire_breakdown">逐年积累</div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th data-i18n="fire_th_year">年份</th>
+              <th data-i18n="fire_th_year">年数</th>
               <th data-i18n="fire_th_age">年龄</th>
-              <th data-i18n="fire_th_contributed">投入</th>
-              <th data-i18n="fire_th_growth">收益</th>
+              <th data-i18n="fire_th_contributed">累计投入</th>
+              <th data-i18n="fire_th_growth">累计收益</th>
               <th data-i18n="fire_th_total">总额</th>
             </tr>
           </thead>
@@ -493,7 +611,7 @@
 
     <footer>
       <div data-i18n="fire_footer_l">Invest Tracker · 个人工具</div>
-      <div data-i18n="fire_footer_r">回报为历史平均值,不构成任何保证。</div>
+      <div data-i18n="fire_footer_r">回报和通胀均为长期均值估计，不构成保证。</div>
     </footer>
 
   </div>
@@ -502,82 +620,114 @@
   <script>
     const $ = id => document.getElementById(id);
 
-    $('etf').addEventListener('change', e => {
-      $('customRateField').style.display = e.target.value === 'custom' ? 'block' : 'none';
-    });
-
-    const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+    function fmtWan(n) {
+      if (!isFinite(n) || isNaN(n)) return '0 万';
+      const abs = Math.abs(n);
+      if (abs >= 100) return Math.round(n).toLocaleString('en-US') + ' 万';
+      if (abs >= 10)  return n.toFixed(1) + ' 万';
+      return n.toFixed(2) + ' 万';
+    }
 
     function calc() {
-      const ageNow = +$('currentAge').value;
-      const ageGoal = +$('targetAge').value;
-      const target = +$('targetAmount').value;
-      const principal = +$('principal').value;
-      const etfVal = $('etf').value;
-      const rate = (etfVal === 'custom' ? +$('customRate').value : +etfVal) / 100;
-      const infl = +$('inflation').value / 100;
+      const ageNow       = +$('currentAge').value;
+      const ageRetire    = +$('retireAge').value;
+      const currentAsset = +$('currentAsset').value;
+      const returnRate   = +$('returnRate').value / 100;
+      const inflation    = +$('inflation').value / 100;
+      const withdrawRate = +$('withdrawRate').value / 100;
+      const expenseNow   = +$('expenseNow').value;
+      const rentNow      = +$('rentNow').value;
+      const otherIncome  = +$('otherIncome').value;
+      const retireRatio  = +$('retireRatio').value / 100;
 
       const warn = $('warningSlot');
       warn.innerHTML = '';
 
-      if (ageGoal <= ageNow) {
+      if (ageRetire <= ageNow) {
         warn.innerHTML = '<div class="warning">' + t('fire_warn_age') + '</div>';
         $('resultEmpty').style.display = 'none';
         $('resultBlock').classList.add('show');
         $('breakdown').classList.remove('show');
+        $('formula').classList.remove('show');
+        return;
+      }
+      if (withdrawRate <= 0) {
+        warn.innerHTML = '<div class="warning">' + t('fire_warn_withdraw') + '</div>';
+        $('resultEmpty').style.display = 'none';
+        $('resultBlock').classList.add('show');
+        $('breakdown').classList.remove('show');
+        $('formula').classList.remove('show');
         return;
       }
 
-      const n = ageGoal - ageNow;
-      const r = infl > 0 ? (1 + rate) / (1 + infl) - 1 : rate;
-
-      const futurePrincipal = principal * Math.pow(1 + r, n);
-      const remaining = target - futurePrincipal;
-
-      let annual;
-      let alreadyThere = false;
-
-      if (remaining <= 0) {
-        annual = 0;
-        alreadyThere = true;
-      } else if (Math.abs(r) < 1e-9) {
-        annual = remaining / n;
-      } else {
-        annual = remaining * r / ((Math.pow(1 + r, n) - 1) * (1 + r));
-      }
+      const N            = ageRetire - ageNow;
+      const INF          = Math.pow(1 + inflation, N);
+      const futureExpense= expenseNow * INF * retireRatio;
+      const futureRent   = rentNow * INF;
+      const netGap       = futureExpense - futureRent - otherIncome;
+      const F            = Math.max(0, netGap / withdrawRate);
+      const futureAsset  = currentAsset * Math.pow(1 + returnRate, N);
+      const D            = F - futureAsset;
+      const P            = returnRate < 1e-9 ? N : (Math.pow(1 + returnRate, N) - 1) / returnRate;
+      const Y            = D > 0 && P > 0 ? D / P : 0;
 
       $('resultEmpty').style.display = 'none';
       $('resultBlock').classList.add('show');
 
-      if (alreadyThere) {
+      if (F <= 0) {
+        warn.innerHTML = '<div class="success">' + t('fire_warn_covered') + '</div>';
+      } else if (D <= 0) {
         warn.innerHTML = '<div class="success">' + t('fire_warn_ontrack') + '</div>';
       }
 
-      $('annual').textContent = fmt(annual);
-      $('monthly').textContent = '≈ ' + fmt(annual / 12) + t('fire_per_month');
-      $('years').textContent = n + (n === 1 ? t('fire_yr') : t('fire_yrs'));
-      $('effRate').textContent = (r * 100).toFixed(2) + '%' + (infl > 0 ? t('fire_real_suffix') : '');
-      $('totalIn').textContent = fmt(principal + annual * n);
+      // Headline stats
+      $('annual').textContent    = fmtWan(Y);
+      $('monthly').textContent   = '≈ ' + fmtWan(Y / 12) + t('fire_per_month');
+      $('yearsN').textContent    = N + ' ' + t('fire_yrs');
+      $('inf').textContent       = INF.toFixed(2);
+      $('required').textContent  = fmtWan(F);
+      $('gap').textContent       = fmtWan(Math.max(0, D));
+      $('futureAsset').textContent = fmtWan(futureAsset);
+      $('multiplier').textContent  = P.toFixed(1);
 
+      // Formula breakdown
+      const pct = x => (x * 100).toFixed(1) + '%';
+      $('expInf').textContent      = '(1 + ' + pct(inflation) + ')^' + N + ' =';
+      $('valInf').textContent      = INF.toFixed(2);
+      $('expExpense').textContent  = fmtWan(expenseNow) + ' × ' + INF.toFixed(2) + ' × ' + (retireRatio * 100).toFixed(0) + '% =';
+      $('valExpense').textContent  = fmtWan(futureExpense);
+      $('expRent').textContent     = fmtWan(rentNow) + ' × ' + INF.toFixed(2) + ' =';
+      $('valRent').textContent     = fmtWan(futureRent);
+      $('expRequired').textContent = '(' + fmtWan(futureExpense) + ' − ' + fmtWan(futureRent) + ' − ' + fmtWan(otherIncome) + ') ÷ ' + pct(withdrawRate) + ' =';
+      $('valRequired').textContent = fmtWan(F);
+      $('expFuture').textContent   = fmtWan(currentAsset) + ' × (1 + ' + pct(returnRate) + ')^' + N + ' =';
+      $('valFuture').textContent   = fmtWan(futureAsset);
+      $('expGap').textContent      = fmtWan(F) + ' − ' + fmtWan(futureAsset) + ' =';
+      $('valGap').textContent      = fmtWan(Math.max(0, D));
+      $('expMulti').textContent    = '((1 + ' + pct(returnRate) + ')^' + N + ' − 1) ÷ ' + pct(returnRate) + ' =';
+      $('valMulti').textContent    = P.toFixed(1);
+      $('expAnnual').textContent   = fmtWan(Math.max(0, D)) + ' ÷ ' + P.toFixed(1) + ' =';
+      $('valAnnual').textContent   = fmtWan(Y);
+      $('formula').classList.add('show');
+
+      // Year-by-year table
       const tbody = $('tableBody');
       tbody.innerHTML = '';
-      let bal = principal;
-      let contributed = principal;
-      for (let i = 1; i <= n; i++) {
-        bal += annual;
-        contributed += annual;
-        bal = bal * (1 + r);
+      let bal = currentAsset;
+      let contributed = currentAsset;
+      for (let i = 1; i <= N; i++) {
+        bal += Y;
+        contributed += Y;
+        bal = bal * (1 + returnRate);
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${i}</td>
-          <td>${ageNow + i}</td>
-          <td>${fmt(contributed)}</td>
-          <td>${fmt(bal - contributed)}</td>
-          <td>${fmt(bal)}</td>
-        `;
+        tr.innerHTML =
+          '<td>' + i + '</td>' +
+          '<td>' + (ageNow + i) + '</td>' +
+          '<td>' + fmtWan(contributed) + '</td>' +
+          '<td>' + fmtWan(bal - contributed) + '</td>' +
+          '<td>' + fmtWan(bal) + '</td>';
         tbody.appendChild(tr);
       }
-      $('growth').textContent = fmt(bal - (principal + annual * n));
       $('breakdown').classList.add('show');
     }
 
