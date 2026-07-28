@@ -1,8 +1,8 @@
 {
   "tickers": {
     "SXRV.DE": {
-      "last_price": 1406.5999755859375,
-      "last_checked": "2026-07-28T10:21:44+00:00",
+      "last_price": 1407.800048828125,
+      "last_checked": "2026-07-28T13:27:05+00:00",
       "below_low_alerted": false,
       "above_high_alerted": false
     }
